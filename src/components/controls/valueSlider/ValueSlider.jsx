@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 export const ValueSlider = ({name, value, min, max, step, onChange}) => {
@@ -10,10 +9,7 @@ export const ValueSlider = ({name, value, min, max, step, onChange}) => {
         step: PropTypes.number,
         onChange: PropTypes.func,
     };
-    const [range, setRange] = useState(value);
-
     const onRangeChange = (e) => {
-        setRange(e.target.value);
         onChange(name, e.target.value);
     }
 
@@ -21,7 +17,7 @@ export const ValueSlider = ({name, value, min, max, step, onChange}) => {
         <input
             name={name}
             type={'range'}
-            value={range}
+            value={value}
             min={(min ?? 0)}
             max={(max ?? 100)}
             step={step}

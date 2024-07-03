@@ -48,6 +48,9 @@ label {
     &.active {
         @apply bg-cta text-white
     }
+    &.transparent {
+        @apply bg-transparent px-6 text-cta
+    }
 }
 
 .value-slider {

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 export const Check = ({name, label, status, onChange}) => {
@@ -9,18 +8,13 @@ export const Check = ({name, label, status, onChange}) => {
         onChange: PropTypes.func,
     };
 
-    const [isChecked, setIsChecked] = useState(status);
-
     const changeCheckStatus = () => {
-        const sts = isChecked;
-
-        setIsChecked(!sts);
-        onChange(name, !sts);
+        onChange(name, !status);
     }
 
     return (
         <div className={'cursor-pointer inline-flex flex-row gap-2 text-cta'} onClick={changeCheckStatus}>
-            {isChecked
+            {status
                 ? <span className={'material-symbols-filled material-symbols-rounded'}>check_circle</span>
                 : <span className={'material-symbols-outline material-symbols-rounded'}>radio_button_unchecked</span>
             }

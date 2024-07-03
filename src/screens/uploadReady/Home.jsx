@@ -5,7 +5,7 @@ import { TextInput } from '../../components/controls/textinput/TextInput.jsx';
 import { CanvasHolder } from '../../components/imagePlaceholder/canvasHolder/CanvasHolder.jsx';
 
 export const Home = () => {
-    const {settings, setSettings} = useContext(SettingsContext);
+    const {settings, setSettings, resetSettings} = useContext(SettingsContext);
 
     const setSettingsGlobal = (name, value) => {
         setSettings({
@@ -55,7 +55,7 @@ export const Home = () => {
                                 name={'background_blur'}
                                 value={settings.background_blur}
                                 min={0}
-                                max={20}
+                                max={40}
                                 step={0.1}
                                 onChange={setSettingsGlobal}
                             />
@@ -176,7 +176,8 @@ export const Home = () => {
                         />
                     </div>
 
-                    <div className={'inline-flex flex-row gap-2 py-6'}>
+                    <div className={'flex flex-row justify-end gap-2 py-6'}>
+                        <input type={'submit'} className={'cta transparent'} value={'RESET SETTINGS'} onClick={resetSettings}/>
                         <input type={'submit'} className={'cta'} value={'SAVE'}/>
                         <input type={'submit'} className={'cta active'} value={'COPY'}/>
                     </div>

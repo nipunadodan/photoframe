@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import './canvasHolder.css'
 import { useContext, useRef, useState } from 'react';
 import { SettingsContext } from '../../../context/SettingsContext.jsx';
+import html2canvas from 'html2canvas';
 
 export const CanvasHolder = ({width, height, className}) => {
     CanvasHolder.propTypes = {
@@ -63,7 +64,7 @@ export const CanvasHolder = ({width, height, className}) => {
             <canvas ref={canvasBackRef} style={{
                 position:'absolute',
                 zIndex: -8,
-                transform: 'scale(1.05)',
+                transform: 'scale(1.08)',
                 filter: 'blur('+settings.background_blur+'px)',
                 width: '100%', height: '100%',
                 objectFit: 'cover',
@@ -84,6 +85,7 @@ export const CanvasHolder = ({width, height, className}) => {
                     top: 0,
                     zIndex: 10,
                     height: '100%',
+                    width: '100%',
                     transform: 'translateX(-50%) scale(' + settings.foreground_image_scale + ')',
                     borderRadius: settings.border_radius + 'px',
                     left: '50%',
