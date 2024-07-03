@@ -2,7 +2,7 @@ import { Check, Toggler, ValueSlider } from '../../components/controls/index.js'
 import { useContext } from 'react';
 import { SettingsContext } from '../../context/SettingsContext.jsx';
 import { TextInput } from '../../components/controls/textinput/TextInput.jsx';
-import { ImagePlaceholder } from '../../components/imagePlaceholder/ImagePlaceholder.jsx';
+import { CanvasHolder } from '../../components/imagePlaceholder/canvasHolder/CanvasHolder.jsx';
 
 export const Home = () => {
     const {settings, setSettings} = useContext(SettingsContext);
@@ -15,9 +15,8 @@ export const Home = () => {
     };
 
     return (
-        <div className={'flex flex-row justify-center items-center w-screen h-screen'}>
-            <ImagePlaceholder height={840} width={500} fill_color={'#DDDDDD'} className={''}/>
-
+        <div className={'flex flex-row gap-6 justify-center items-center w-screen h-screen'}>
+            <CanvasHolder width={500} height={840} className={'canvas-holder'} />
             <div>
                 <aside className={'justify-center w-full p-4 inline-flex flex-col gap-6'}>
                     <div className={'flex flex-col items-start gap-2'}>
@@ -56,8 +55,8 @@ export const Home = () => {
                                 name={'background_blur'}
                                 value={settings.background_blur}
                                 min={0}
-                                max={1}
-                                step={0.01}
+                                max={20}
+                                step={0.1}
                                 onChange={setSettingsGlobal}
                             />
                             <div className={'text-center'}>{settings.background_blur}</div>
@@ -87,7 +86,7 @@ export const Home = () => {
                                 value={settings.foreground_image_scale}
                                 min={0}
                                 max={1.5}
-                                step={0.1}
+                                step={0.01}
                                 onChange={setSettingsGlobal}
                             />
                             <div className={'text-center'}>{settings.foreground_image_scale}</div>

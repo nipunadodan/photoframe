@@ -10,10 +10,10 @@ export const SettingsProvider = ({ children }) => {
 
     const [settings, setSettings] = useState({
         background: 'light',
-        background_overlay_opacity: 0.10,
-        background_blur: 0.10,
+        background_overlay_opacity: 0.20,
+        background_blur: 10,
         border_radius: 20,
-        foreground_image_scale: 1,
+        foreground_image_scale: 0.8,
         longest_edge: 1080,
         ratio_width: 4,
         ratio_height: 5,
