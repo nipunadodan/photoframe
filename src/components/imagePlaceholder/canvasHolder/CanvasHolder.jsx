@@ -1,9 +1,8 @@
-// import PropTypes from 'prop-types';
-import './canvasHolder.css'
 import { forwardRef, useContext, useImperativeHandle, useRef, useState } from 'react';
-import { SettingsContext } from '../../../context/SettingsContext.jsx';
-import html2canvas from 'html2canvas';
 import PropTypes from 'prop-types';
+import { SettingsContext } from '../../../context/SettingsContext.jsx';
+import domtoimage from 'dom-to-image';
+import './canvasHolder.css'
 
 // eslint-disable-next-line react/display-name
 export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
@@ -61,15 +60,23 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
     }, []);
 
     const copyImage = () => {
-        html2canvas(canvasRef.current, { scale: window.devicePixelRatio, backgroundColor: null }).then(screenshot => {
-            /*const node = document.querySelector('#screenshot');
+        const el = canvasRef.current;
+        const scale = window.devicePixelRatio;
 
-            node.appendChild(screenshot);*/
-
-            screenshot.toBlob(blob => {
+        /* options are added to the following to mitigate the issue as described here: https://github.com/tsayen/dom-to-image/issues/361 */
+        domtoimage.toBlob(el, {
+            height: el.offsetHeight * scale,
+            width: el.offsetWidth * scale,
+            style: {
+                transform: `scale(${scale})`,
+                transformOrigin: 'top left',
+                width: `${el.offsetWidth}px`,
+                height: `${el.offsetHeight}px`
+            }
+        })
+            .then(blob => {
                 navigator.clipboard.write([new ClipboardItem({'image/png': blob})])
             });
-        });
     }
 
     return (
@@ -87,7 +94,7 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
             <canvas ref={canvasBackRef} style={{
                 position:'absolute',
                 zIndex: -8,
-                transform: 'scale(1.08)',
+                transform: 'scale(1.5)',
                 filter: 'blur('+settings.background_blur+'px)',
                 width: '100%', height: '100%',
                 objectFit: 'cover',
@@ -99,8 +106,7 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
                 top: 0,
                 zIndex: 0,
                 background: settings.background === 'light' ? '#ffffff' : '#000000',
-                //filter: 'opacity('+settings.background_overlay_opacity+')'
-                opacity: settings.background_overlay_opacity
+                filter: 'opacity('+settings.background_overlay_opacity+')',
             }}></div>
             <canvas
                 ref={canvasForeRef}
