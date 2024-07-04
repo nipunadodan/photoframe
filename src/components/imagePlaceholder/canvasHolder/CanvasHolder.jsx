@@ -1,10 +1,12 @@
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import './canvasHolder.css'
-import { useContext, useRef, useState } from 'react';
+import { forwardRef, useContext, useImperativeHandle, useRef, useState } from 'react';
 import { SettingsContext } from '../../../context/SettingsContext.jsx';
 import html2canvas from 'html2canvas';
+import PropTypes from 'prop-types';
 
-export const CanvasHolder = ({width, height, className}) => {
+// eslint-disable-next-line react/display-name
+export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
     CanvasHolder.propTypes = {
         width: PropTypes.number,
         height: PropTypes.number,
@@ -14,6 +16,7 @@ export const CanvasHolder = ({width, height, className}) => {
     const [isImgUploaded, setIsImgUploaded] = useState(false);
     const {settings} = useContext(SettingsContext);
 
+    const canvasRef = useRef();
     const canvasBackRef = useRef();
     const canvasForeRef = useRef();
 
@@ -49,8 +52,28 @@ export const CanvasHolder = ({width, height, className}) => {
         setIsImgUploaded(true);
     }
 
+    useImperativeHandle(ref, () => {
+        return {
+            copy() {
+                copyImage();
+            }
+        }
+    }, []);
+
+    const copyImage = () => {
+        html2canvas(canvasRef.current, { scale: window.devicePixelRatio, backgroundColor: null }).then(screenshot => {
+            /*const node = document.querySelector('#screenshot');
+
+            node.appendChild(screenshot);*/
+
+            screenshot.toBlob(blob => {
+                navigator.clipboard.write([new ClipboardItem({'image/png': blob})])
+            });
+        });
+    }
+
     return (
-        <label htmlFor={'uploadImg'} className={className} style={{
+        <label ref={canvasRef} htmlFor={'uploadImg'} className={className} style={{
             width,
             height,
             display: 'block',
@@ -76,21 +99,22 @@ export const CanvasHolder = ({width, height, className}) => {
                 top: 0,
                 zIndex: 0,
                 background: settings.background === 'light' ? '#ffffff' : '#000000',
-                filter: 'opacity('+settings.background_overlay_opacity+')'
+                //filter: 'opacity('+settings.background_overlay_opacity+')'
+                opacity: settings.background_overlay_opacity
             }}></div>
             <canvas
                 ref={canvasForeRef}
                 style={{
                     position: 'absolute',
-                    top: 0,
                     zIndex: 10,
-                    height: '100%',
-                    width: '100%',
-                    transform: 'translateX(-50%) scale(' + settings.foreground_image_scale + ')',
+                    maxHeight: '100%',
+                    maxWidth: '100%',
                     borderRadius: settings.border_radius + 'px',
+                    transform: 'translateX(-50%) translateY(-50%) scale(' + settings.foreground_image_scale + ')',
                     left: '50%',
+                    top: '50%',
                 }}
             ></canvas>
         </label>
     );
-};
+});

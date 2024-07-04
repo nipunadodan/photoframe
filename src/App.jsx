@@ -1,5 +1,5 @@
 import './App.css'
-import { Home } from './screens/uploadReady/Home.jsx';
+import { Home } from './screens/home/Home.jsx';
 import { SettingsProvider } from './context/SettingsContext.jsx';
 
 function App() {
