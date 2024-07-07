@@ -15,6 +15,15 @@ export const SettingsPanel = () => {
         calculateCanvasDimensions();
     }, [settings.longest_edge, settings.ratio_height, settings.ratio_width]);
 
+    useEffect(() => {
+        if (settings.background === 'off') {
+            setSettings({
+                ...settings,
+                background_overlay_opacity: 1,
+            })
+        }
+    }, [settings.background])
+
     const calculateCanvasDimensions = () => {
         const longest_edge = parseInt(settings.longest_edge);
         const ratio_height = parseInt(settings.ratio_height);
@@ -79,7 +88,7 @@ export const SettingsPanel = () => {
                             value={settings.background_blur}
                             min={0}
                             max={40}
-                            step={0.1}
+                            step={1}
                             onChange={setSettingsGlobal}
                         />
                         <div className={'text-center'}>{settings.background_blur}</div>
@@ -174,27 +183,27 @@ export const SettingsPanel = () => {
 
                 <div className={'flex flex-row gap-8'}>
                     <Check
-                        name={'watermark'}
+                        name={'watermark_enabled'}
                         label={'Watermark'}
-                        status={settings.watermark}
+                        status={settings.watermark_enabled}
                         onChange={setSettingsGlobal}
                     />
                     <Check
-                        name={'exif'}
+                        name={'exif_enabled'}
                         label={'EXIF'}
-                        status={settings.exif}
+                        status={settings.exif_enabled}
                         onChange={setSettingsGlobal}
                     />
                     <Check
-                        name={'camera_make'}
+                        name={'camera_make_enabled'}
                         label={'Camera Make'}
-                        status={settings.camera_make}
+                        status={settings.camera_make_enabled}
                         onChange={setSettingsGlobal}
                     />
                     <Check
-                        name={'lens_info'}
+                        name={'lens_info_enabled'}
                         label={'Lens Info'}
-                        status={settings.lens_info}
+                        status={settings.lens_info_enabled}
                         onChange={setSettingsGlobal}
                     />
                 </div>

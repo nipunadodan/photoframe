@@ -1,8 +1,10 @@
-import { forwardRef, useContext, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SettingsContext } from '../../../context/SettingsContext.jsx';
-import domtoimage from 'dom-to-image';
 import './canvasHolder.css'
+import exifr from 'exifr';
+import domtoimage from 'dom-to-image';
+import { fractions, getTextWidth } from '../../../utils/index.js';
 
 // eslint-disable-next-line react/display-name
 export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
@@ -13,7 +15,8 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
     }
 
     const [isImgUploaded, setIsImgUploaded] = useState(false);
-    const {settings} = useContext(SettingsContext);
+    const {settings, setSettings} = useContext(SettingsContext);
+    const [exifDim, setExifDim] = useState('');
 
     const canvasRef = useRef();
     const canvasBackRef = useRef();
@@ -47,6 +50,8 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         }
 
         reader.readAsDataURL(blob);
+
+        readExif(blob);
 
         setIsImgUploaded(true);
     }
@@ -109,6 +114,29 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
             });
     }
 
+    const readExif = async (blob) => {
+        let file = await exifr.readBlobAsArrayBuffer(blob);
+
+        exifr.parse(file)
+            .then((output) => {
+                const camera_make = (output.Make === 'NIKON CORPORATION' ? '' : output.Make) + ' ' + output.Model;
+                const lens_info = output.LensModel ?? '';
+                const exif = (output.ExposureTime < 0.1 ? fractions(output.ExposureTime) : output.ExposureTime) + ' s • f/' + output.FNumber + ' • ' + output.FocalLength + ' mm • ISO ' + output.ISO;
+
+                setSettings({
+                    ...settings,
+                    camera_make,
+                    lens_info,
+                    exif,
+                });
+            });
+    }
+
+    useEffect(() => {
+        const exifWidth = getTextWidth(settings.exif, 'normal 16px Inter');
+        setExifDim('0 0 ' + exifWidth + ' 16');
+    }, [settings.exif]);
+
     return (
         <label ref={canvasRef} htmlFor={'uploadImg'} className={className} style={{
             flexShrink: 0,
@@ -140,19 +168,31 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
                 background: settings.background === 'light' ? '#ffffff' : '#000000',
                 filter: 'opacity('+settings.background_overlay_opacity+')',
             }}></div>
-            <canvas
-                ref={canvasForeRef}
-                style={{
-                    position: 'absolute',
-                    zIndex: 10,
-                    maxHeight: '100%',
-                    maxWidth: '100%',
-                    borderRadius: settings.border_radius + 'px',
-                    transform: 'translateX(-50%) translateY(-50%) scale(' + settings.foreground_image_scale + ')',
-                    left: '50%',
-                    top: '50%',
-                }}
-            ></canvas>
+            <div style={{
+                position: 'absolute',
+                zIndex: 10,
+                transform: 'translateX(-50%) translateY(-50%) scale(' + settings.foreground_image_scale + ')',
+                left: '50%',
+                top: 'calc(50% + 8px)',
+                width: '100%'
+            }}>
+                <canvas
+                    ref={canvasForeRef}
+                    style={{
+                        maxHeight: '100%',
+                        maxWidth: '100%',
+                        borderRadius: settings.border_radius + 'px',
+                    }}
+                ></canvas>
+                <svg viewBox={exifDim} style={{
+                    padding: '5px 0',
+                    width: '50%',
+                    display: 'flex',
+                    justifyContent: 'space-between'
+                }}>
+                    <text x="0" y="15" dangerouslySetInnerHTML={{__html: settings.exif}} fill={(settings.background === 'light' ? '#000' : '#fff')} />
+                </svg>
+            </div>
         </label>
     );
 });

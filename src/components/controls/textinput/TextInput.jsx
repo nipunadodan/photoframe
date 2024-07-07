@@ -1,16 +1,23 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 export const TextInput = ({name, type, initval, placeholder, onChange, className}) => {
     TextInput.propTypes = {
         name: PropTypes.string,
         type: PropTypes.string,
-        initval: PropTypes.string | PropTypes.number,
+        initval: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number
+        ]),
         placeholder: PropTypes.string,
         className: PropTypes.string,
         onChange: PropTypes.func,
     };
     const [value, setValue] = useState(initval);
+
+    useEffect(() => {
+        setValue(initval);
+    }, [initval]);
 
     const handleOnChange = (e) => {
         setValue(e.target.value);

@@ -10,7 +10,7 @@ export const ValueSlider = ({name, value, min, max, step, onChange}) => {
         onChange: PropTypes.func,
     };
     const onRangeChange = (e) => {
-        onChange(name, e.target.value);
+        onChange(name, parseFloat(e.target.value));
     }
 
     return (

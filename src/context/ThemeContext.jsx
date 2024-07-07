@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 const getInitialTheme = () => {
     if (typeof window !== 'undefined' && window.localStorage) {
-        const storedPrefs = window.localStorage.getItem('color-theme');
+        const storedPrefs = window.localStorage.getItem('pwf-theme');
         if (typeof storedPrefs === 'string') {
             return storedPrefs;
         }
@@ -33,7 +33,7 @@ export const ThemeProvider = ({ initialTheme, children }) => {
         root.classList.remove(isDark ? 'light' : 'dark');
         root.classList.add(rawTheme);
 
-        localStorage.setItem('color-theme', rawTheme);
+        localStorage.setItem('pwf-theme', rawTheme);
     };
 
     if (initialTheme) {

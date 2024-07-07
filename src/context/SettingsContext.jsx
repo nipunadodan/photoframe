@@ -13,10 +13,14 @@ const INIT = {
     border_radius: 20,
     foreground_image_scale: 0.8,
     caption: '',
-    watermark: true,
-    exif: true,
-    camera_make: false,
-    lens_info: false,
+    watermark_enabled: true,
+    exif_enabled: true,
+    camera_make_enabled: false,
+    lens_info_enabled: false,
+    watermark: '',
+    exif: '',
+    camera_make: '',
+    lens_info: '',
 };
 
 const getInitialSettings = () => {
@@ -44,7 +48,13 @@ export const SettingsProvider = ({ children }) => {
     }
 
     const resetSettings = () => {
-        setSettings(INIT);
+        setSettings({
+            ...INIT,
+            watermark: settings.watermark,
+            exif: settings.exif,
+            camera_make: settings.camera_make,
+            lens_info: settings.lens_info,
+        });
     }
 
     useEffect(() => {

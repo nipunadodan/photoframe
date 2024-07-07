@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 export const Toggler = ({name, list, status, onChange}) => {
@@ -10,17 +9,14 @@ export const Toggler = ({name, list, status, onChange}) => {
         onChange: PropTypes.func,
     };
 
-    const [selectedItem, setSelectedItem] = useState(status);
-
     const selectOption = (selectedItem) => {
-        setSelectedItem(selectedItem);
         onChange(name, selectedItem);
     }
 
     return (
         <div className="inline-flex flex-row gap-3 bg-gray-100 dark:bg-gray-700 p-2 rounded-full">
             {list.map((item, index) => (
-                <div key={index} className={'action-button ' + (selectedItem === item.value ? 'active' : '')} onClick={() => selectOption(item.value)}>
+                <div key={index} className={'action-button ' + (status === item.value ? 'active' : '')} onClick={() => selectOption(item.value)}>
                     {item.label}
                 </div>
             ))}
