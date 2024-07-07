@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
+  mode: 'jit',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -12,6 +14,7 @@ export default {
       },
       colors: {
         cta: "#364462",
+        cta2: "#5b89f8",
       }
     },
   },

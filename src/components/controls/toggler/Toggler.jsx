@@ -18,7 +18,7 @@ export const Toggler = ({name, list, status, onChange}) => {
     }
 
     return (
-        <div className="inline-flex flex-row gap-3 bg-gray-100 p-2 rounded-full">
+        <div className="inline-flex flex-row gap-3 bg-gray-100 dark:bg-gray-700 p-2 rounded-full">
             {list.map((item, index) => (
                 <div key={index} className={'action-button ' + (selectedItem === item.value ? 'active' : '')} onClick={() => selectOption(item.value)}>
                     {item.label}

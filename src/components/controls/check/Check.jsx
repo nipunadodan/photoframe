@@ -13,12 +13,12 @@ export const Check = ({name, label, status, onChange}) => {
     }
 
     return (
-        <div className={'cursor-pointer inline-flex flex-row gap-2 text-cta'} onClick={changeCheckStatus}>
+        <div className={'cursor-pointer inline-flex flex-row gap-2 text-cta dark:text-gray-100'} onClick={changeCheckStatus}>
             {status
                 ? <span className={'material-symbols-filled material-symbols-rounded'}>check_circle</span>
                 : <span className={'material-symbols-outline material-symbols-rounded'}>radio_button_unchecked</span>
             }
-            <span className={'text-gray-700'}>{label}</span>
+            <span className={'text-gray-700 dark:text-gray-100'}>{label}</span>
         </div>
     );
 };

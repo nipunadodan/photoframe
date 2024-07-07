@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { Check, Toggler, ValueSlider, TextInput } from '../controls/index.js';
 import { SettingsContext } from '../../context/SettingsContext.jsx';
 
@@ -11,6 +11,33 @@ export const SettingsPanel = () => {
             [name]: value,
         });
     };
+    useEffect(() => {
+        calculateCanvasDimensions();
+    }, [settings.longest_edge, settings.ratio_height, settings.ratio_width]);
+
+    const calculateCanvasDimensions = () => {
+        const longest_edge = parseInt(settings.longest_edge);
+        const ratio_height = parseInt(settings.ratio_height);
+        const ratio_width = parseInt(settings.ratio_width);
+
+        let width, height;
+
+        if (ratio_height === ratio_width) {
+            width = height = longest_edge;
+        } else if (ratio_height > ratio_width) {
+            height = longest_edge;
+            width = longest_edge / ratio_height * ratio_width;
+        } else {
+            height = longest_edge / ratio_width * ratio_height;
+            width = longest_edge;
+        }
+
+        setSettings({
+            ...settings,
+            width,
+            height,
+        });
+    }
 
     return (
         <div>
@@ -66,7 +93,7 @@ export const SettingsPanel = () => {
                             name={'border_radius'}
                             value={settings.border_radius}
                             min={0}
-                            max={35}
+                            max={55}
                             step={1}
                             onChange={setSettingsGlobal}
                         />

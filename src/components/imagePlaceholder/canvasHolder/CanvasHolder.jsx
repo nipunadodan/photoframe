@@ -55,6 +55,9 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         return {
             copy() {
                 copyImage();
+            },
+            save() {
+                saveImage();
             }
         }
     }, []);
@@ -76,11 +79,39 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         })
             .then(blob => {
                 navigator.clipboard.write([new ClipboardItem({'image/png': blob})])
+                    .then(() => {
+                        console.log('copied');
+                    })
+            });
+    }
+
+    const saveImage = () => {
+        const el = canvasRef.current;
+        const scale = window.devicePixelRatio;
+        const caption = settings.caption ? settings.caption.toLowerCase().replace(/\s+/g, '-') : 'photo-with-frame';
+
+        domtoimage.toJpeg(el, {
+            quality: 0.95,
+            height: el.offsetHeight * scale,
+            width: el.offsetWidth * scale,
+            style: {
+                transform: `scale(${scale})`,
+                transformOrigin: 'top left',
+                width: `${el.offsetWidth}px`,
+                height: `${el.offsetHeight}px`
+            }
+        })
+            .then(function (dataUrl) {
+                var link = document.createElement('a');
+                link.download = caption+'.jpg';
+                link.href = dataUrl;
+                link.click();
             });
     }
 
     return (
         <label ref={canvasRef} htmlFor={'uploadImg'} className={className} style={{
+            flexShrink: 0,
             width,
             height,
             display: 'block',
@@ -93,8 +124,9 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
             <input type={'file'} id="uploadImg" onChange={uploadImage} onDrop={uploadImage} className={'hidden'} />
             <canvas ref={canvasBackRef} style={{
                 position:'absolute',
-                zIndex: -8,
-                transform: 'scale(1.5)',
+                top: 0,
+                // zIndex: -8,
+                transform: 'scale(1.3)',
                 filter: 'blur('+settings.background_blur+'px)',
                 width: '100%', height: '100%',
                 objectFit: 'cover',

@@ -35,21 +35,21 @@ label {
 }
 
 .action-button {
-  @apply py-1 px-6 rounded-full bg-gray-300 cursor-pointer text-xs;
+  @apply py-1 px-6 rounded-full bg-gray-300 dark:bg-gray-700 cursor-pointer text-xs;
 
   &.active {
-    @apply bg-cta text-white
+    @apply bg-cta dark:bg-cta2 text-white
   }
 }
 
 .cta {
-    @apply py-3 px-12 rounded-full bg-gray-300 cursor-pointer text-xs inline-flex;
+    @apply py-3 px-12 rounded-full bg-gray-300 dark:bg-gray-700 cursor-pointer text-xs inline-flex;
 
     &.active {
-        @apply bg-cta text-white
+        @apply bg-cta dark:bg-cta2 text-white
     }
     &.transparent {
-        @apply bg-transparent px-6 text-cta
+        @apply bg-transparent px-6 text-cta dark:text-gray-200
     }
 }
 
@@ -86,13 +86,14 @@ label {
 }
 
 .canvas-holder {
-    &::after {
+    /*@apply dark:text-gray-200;*/
+    &::before {
         display: block;
         position: relative;
         z-index: -10;
         width: 100%;
         content: 'Click to pick an image';
-        color: #364462;
+        color: #888;
         text-align: center;
         height: 100%;
         top: -5px;
