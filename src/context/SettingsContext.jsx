@@ -44,7 +44,13 @@ export const SettingsProvider = ({ children }) => {
     const [settings, setSettings] = useState(getInitialSettings);
 
     const saveSettings = () => {
-        localStorage.setItem('pwf-settings', JSON.stringify(settings));
+        localStorage.setItem('pwf-settings', JSON.stringify({
+            ...settings,
+            watermark: '',
+            exif: '',
+            camera_make: '',
+            lens_info: '',
+        }));
     }
 
     const resetSettings = () => {
