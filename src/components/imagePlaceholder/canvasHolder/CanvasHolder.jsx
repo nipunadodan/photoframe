@@ -49,6 +49,12 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
                 ctx.drawImage(img, offsetX1, offsetY1);
 
                 ctx.restore();
+                ctx.beginPath();
+                ctx.fillStyle = settings.background === 'dark' ? '#000000' : '#ffffff';
+                ctx.filter = 'opacity('+settings.background_overlay_opacity+')';
+                ctx.fillRect(0, 0, img.width, img.height);
+
+                ctx.restore();
                 ctx.filter = 'none';
                 ctx.drawImage(img, offsetX2, offsetY2, img.width * settings.foreground_image_scale, img.height * settings.foreground_image_scale);
             }
