@@ -21,6 +21,7 @@ const INIT = {
     exif: '',
     camera_make: '',
     lens_info: '',
+    copying: 0,
 };
 
 const getInitialSettings = () => {

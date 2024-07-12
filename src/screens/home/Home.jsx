@@ -30,7 +30,7 @@ export const Home = () => {
             <CanvasHolder ref={canvasRef} width={settings.width} height={settings.height} className={'canvas-holder'} />
             <div>
                 <SettingsPanel />
-                <SettingsActions command={onCommand} commandStatus={''} />
+                <SettingsActions command={onCommand} />
             </div>
         </div>
     );

@@ -20,5 +20,5 @@ export const useCalculatedCanvasDimensions = () => {
         calcWidth = longest_edge;
     }
 
-    return {calcWidth, calcHeight}
+    return {calcWidth: Math.round(calcWidth), calcHeight: Math.round(calcHeight)}
 }

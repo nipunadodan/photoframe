@@ -1,9 +1,9 @@
-import { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SettingsContext } from '../../../context/SettingsContext.jsx';
 import './canvasHolder.css'
 import exifr from 'exifr';
-import { fractions, getTextWidth } from '../../../utils/index.js';
+import { dimsContain, drawImageContain, drawImageCover, fractions, getTextWidth } from '../../../utils/index.js';
 import { useCalculatedCanvasDimensions } from '../../../custom-hooks/calcCanvasDim.js';
 
 // eslint-disable-next-line react/display-name
@@ -16,9 +16,15 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
 
     const [isImgUploaded, setIsImgUploaded] = useState(false);
     const {settings, setSettings} = useContext(SettingsContext);
+    const {calcWidth, calcHeight} = useCalculatedCanvasDimensions();
     const [exifDim, setExifDim] = useState('');
 
     const canvasRef = useRef();
+    const settingsRef = useRef(settings);
+
+    useEffect(() => {
+        settingsRef.current = settings;
+    }, [settings]);
 
     const uploadImage = (e) => {
         e.preventDefault();
@@ -29,34 +35,45 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
     function thumbnail(ref, blob){
         const ctx = ref.current.getContext('2d');
         const reader = new FileReader();
+        const canvasWidth = calcWidth;
+        const canvasHeight = calcHeight;
 
         reader.onload = function(event){
             const img = new Image();
 
             img.onload = function(){
-                const offsetX1 = img.width * (1 - 1.3) / 2;
-                const offsetY1 = img.height * (1 - 1.3) / 2;
-                const offsetX2 = img.width * (1 - settings.foreground_image_scale) / 2;
-                const offsetY2 = img.height * (1 - settings.foreground_image_scale) / 2;
-
-                ref.current.width = img.width;
-                ref.current.height = img.height;
+                ref.current.width = canvasWidth;
+                ref.current.height = canvasHeight;
 
                 ctx.save();
 
+                // draw background image with a blur
                 ctx.filter = 'blur('+settings.background_blur+'px)';
-                ctx.scale(1.3, 1.3);
-                ctx.drawImage(img, offsetX1, offsetY1);
+                drawImageCover(ctx, img, 0, 0, canvasWidth, canvasHeight, 1.3);
 
+                // draw overlay
                 ctx.restore();
                 ctx.beginPath();
                 ctx.fillStyle = settings.background === 'dark' ? '#000000' : '#ffffff';
                 ctx.filter = 'opacity('+settings.background_overlay_opacity+')';
-                ctx.fillRect(0, 0, img.width, img.height);
+                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
                 ctx.restore();
                 ctx.filter = 'none';
-                ctx.drawImage(img, offsetX2, offsetY2, img.width * settings.foreground_image_scale, img.height * settings.foreground_image_scale);
+
+                ctx.save();
+
+                // create rounded rectangle
+                ctx.beginPath();
+                const {drawWidth, drawHeight, offsetX, offsetY} = dimsContain(img, 0, 0, canvasWidth, canvasHeight, settings.foreground_image_scale);
+                ctx.roundRect(offsetX, offsetY, drawWidth, drawHeight, settings.border_radius);
+                ctx.closePath();
+                ctx.clip();
+
+                // draw foreground image
+                drawImageContain(ctx, img, 0, 0, canvasWidth, canvasHeight, settings.foreground_image_scale);
+
+                ctx.restore();
             }
 
             img.src = event.target.result;
@@ -80,16 +97,33 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         }
     }, []);
 
-    const copyImage = () => {
+    const copyImage = useCallback(() => {
         const el = canvasRef.current;
+
+        setSettings({
+            ...settingsRef.current,
+            copying: 1,
+        })
 
         el.toBlob((blob) => {
             navigator.clipboard.write([new ClipboardItem({'image/png': blob})])
                 .then(() => {
                     console.log('copied');
-                })
+
+                    setSettings({
+                        ...settingsRef.current,
+                        copying: 2,
+                    });
+
+                    setTimeout(() => {
+                        setSettings({
+                            ...settingsRef.current,
+                            copying: 0,
+                        });
+                    }, 8000);
+                });
         });
-    }
+    }, [settings]);
 
     const saveImage = () => {
         const el = canvasRef.current;
@@ -130,9 +164,10 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
     return (
         <label htmlFor={'uploadImg'} className={className} style={{
             flexShrink: 0,
-            width,
-            height,
-            display: 'block',
+            height: 840,
+            width: 378,
+            display: 'flex',
+            alignItems: 'center',
             position: 'relative',
             overflow: 'clip',
             border: (!isImgUploaded ? '3px dashed #364462' : 'none'),
@@ -142,7 +177,7 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
             <input type={'file'} id="uploadImg" onChange={uploadImage} onDrop={uploadImage} className={'hidden'} />
             <canvas ref={canvasRef} style={{
                 position:'absolute',
-                top: 0,
+                top: (isImgUploaded ? 0 : ''),
                 width: '100%',
             }}></canvas>
         </label>
