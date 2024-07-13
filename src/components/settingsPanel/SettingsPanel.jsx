@@ -1,9 +1,11 @@
 import { useContext, useEffect } from 'react';
 import { Check, Toggler, ValueSlider, TextInput } from '../controls/index.js';
 import { SettingsContext } from '../../context/SettingsContext.jsx';
+import { useCalculatedCanvasDimensions } from '../../custom-hooks/calcCanvasDim.js';
 
 export const SettingsPanel = () => {
     const {settings, setSettings} = useContext(SettingsContext);
+    const {calcWidth, calcHeight} = useCalculatedCanvasDimensions();
 
     const setSettingsGlobal = (name, value) => {
         setSettings({
@@ -12,7 +14,11 @@ export const SettingsPanel = () => {
         });
     };
     useEffect(() => {
-        calculateCanvasDimensions();
+        setSettings({
+            ...settings,
+            width: calcWidth,
+            height: calcHeight,
+        });
     }, [settings.longest_edge, settings.ratio_height, settings.ratio_width]);
 
     useEffect(() => {
@@ -23,30 +29,6 @@ export const SettingsPanel = () => {
             })
         }
     }, [settings.background])
-
-    const calculateCanvasDimensions = () => {
-        const longest_edge = parseInt(settings.longest_edge);
-        const ratio_height = parseInt(settings.ratio_height);
-        const ratio_width = parseInt(settings.ratio_width);
-
-        let width, height;
-
-        if (ratio_height === ratio_width) {
-            width = height = longest_edge;
-        } else if (ratio_height > ratio_width) {
-            height = longest_edge;
-            width = longest_edge / ratio_height * ratio_width;
-        } else {
-            height = longest_edge / ratio_width * ratio_height;
-            width = longest_edge;
-        }
-
-        setSettings({
-            ...settings,
-            width,
-            height,
-        });
-    }
 
     return (
         <div>
@@ -207,8 +189,6 @@ export const SettingsPanel = () => {
                         onChange={setSettingsGlobal}
                     />
                 </div>
-
-
             </aside>
         </div>
     );

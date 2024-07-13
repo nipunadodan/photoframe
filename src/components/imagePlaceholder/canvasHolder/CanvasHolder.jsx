@@ -1,10 +1,10 @@
-import { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SettingsContext } from '../../../context/SettingsContext.jsx';
 import './canvasHolder.css'
 import exifr from 'exifr';
-import domtoimage from 'dom-to-image';
-import { fractions, getTextWidth } from '../../../utils/index.js';
+import { dimsContain, drawImageContain, drawImageCover, fractions, getTextWidth } from '../../../utils/index.js';
+import { useCalculatedCanvasDimensions } from '../../../custom-hooks/calcCanvasDim.js';
 
 // eslint-disable-next-line react/display-name
 export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
@@ -15,37 +15,90 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
     }
 
     const [isImgUploaded, setIsImgUploaded] = useState(false);
-    const {settings, setSettings} = useContext(SettingsContext);
     const [exifDim, setExifDim] = useState('');
 
+    const {settings, setSettings} = useContext(SettingsContext);
+    const {calcWidth, calcHeight} = useCalculatedCanvasDimensions();
+
     const canvasRef = useRef();
-    const canvasBackRef = useRef();
-    const canvasForeRef = useRef();
+    const settingsRef = useRef(settings);
+
+    useEffect(() => {
+        drawInitCanvas('Click to pick an image');
+    }, []);
+
+    useEffect(() => {
+        settingsRef.current = settings;
+    }, [settings]);
+
+    const drawInitCanvas = (text) => {
+        const ctx = canvasRef.current.getContext('2d');
+        const width = canvasRef.current.width;
+        const height = canvasRef.current.height;
+
+        // save the unaltered context
+        ctx.save();
+
+        ctx.font = "10px Inter";
+        const approxFontHeight = parseInt(ctx.font);
+        ctx.fillStyle = '#afafaf';
+        ctx.textAlign = "center";
+        ctx.fillText(text, width / 2, (height / 2) + approxFontHeight / 2);
+
+        // restore the unaltered context
+        ctx.restore();
+    }
 
     const uploadImage = (e) => {
         e.preventDefault();
 
-        thumbnail(e.target.files[0]);
+        thumbnail(canvasRef, e.target.files[0]);
     }
 
-    function thumbnail(blob){
-        const ctx = canvasBackRef.current.getContext('2d');
-        const ctx2 = canvasForeRef.current.getContext('2d');
+    function thumbnail(ref, blob){
+        const ctx = ref.current.getContext('2d');
         const reader = new FileReader();
+        const canvasWidth = calcWidth;
+        const canvasHeight = calcHeight;
 
         reader.onload = function(event){
             const img = new Image();
 
             img.onload = function(){
-                canvasBackRef.current.width = img.width;
-                canvasBackRef.current.height = img.height;
+                ref.current.width = canvasWidth;
+                ref.current.height = canvasHeight;
 
-                canvasForeRef.current.width = img.width;
-                canvasForeRef.current.height = img.height;
+                ctx.save();
 
-                ctx.drawImage(img, 0, 0);
-                ctx2.drawImage(img, 0, 0);
+                // draw background image with a blur
+                ctx.filter = 'blur('+settings.background_blur+'px)';
+                drawImageCover(ctx, img, 0, 0, canvasWidth, canvasHeight, 1.3);
+
+                // draw overlay
+                ctx.restore();
+                ctx.beginPath();
+                ctx.fillStyle = settings.background === 'dark' ? '#000000' : '#ffffff';
+                ctx.filter = 'opacity('+settings.background_overlay_opacity+')';
+                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+                ctx.restore();
+                ctx.filter = 'none';
+
+                ctx.save();
+
+                // create rounded rectangle
+                ctx.beginPath();
+                const {drawWidth, drawHeight, offsetX, offsetY} = dimsContain(img, 0, 0, canvasWidth, canvasHeight, settings.foreground_image_scale);
+                ctx.roundRect(offsetX, offsetY, drawWidth, drawHeight, settings.border_radius);
+                ctx.closePath();
+                ctx.clip();
+
+                // draw foreground image
+                drawImageContain(ctx, img, 0, 0, canvasWidth, canvasHeight, settings.foreground_image_scale);
+
+                ctx.restore();
             }
+
             img.src = event.target.result;
         }
 
@@ -67,51 +120,45 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         }
     }, []);
 
-    const copyImage = () => {
+    const copyImage = useCallback(() => {
         const el = canvasRef.current;
-        const scale = window.devicePixelRatio;
 
-        /* options are added to the following to mitigate the issue as described here: https://github.com/tsayen/dom-to-image/issues/361 */
-        domtoimage.toBlob(el, {
-            height: el.offsetHeight * scale,
-            width: el.offsetWidth * scale,
-            style: {
-                transform: `scale(${scale})`,
-                transformOrigin: 'top left',
-                width: `${el.offsetWidth}px`,
-                height: `${el.offsetHeight}px`
-            }
+        setSettings({
+            ...settingsRef.current,
+            copying: 1,
         })
-            .then(blob => {
-                navigator.clipboard.write([new ClipboardItem({'image/png': blob})])
-                    .then(() => {
-                        console.log('copied');
-                    })
-            });
-    }
+
+        el.toBlob((blob) => {
+            navigator.clipboard.write([new ClipboardItem({'image/png': blob})])
+                .then(() => {
+                    console.log('copied');
+
+                    setSettings({
+                        ...settingsRef.current,
+                        copying: 2,
+                    });
+
+                    setTimeout(() => {
+                        setSettings({
+                            ...settingsRef.current,
+                            copying: 0,
+                        });
+                    }, 8000);
+                });
+        });
+    }, [settings]);
 
     const saveImage = () => {
         const el = canvasRef.current;
-        const scale = window.devicePixelRatio;
         const caption = settings.caption ? settings.caption.toLowerCase().replace(/\s+/g, '-') : 'photo-with-frame';
 
-        domtoimage.toJpeg(el, {
-            quality: 0.95,
-            height: el.offsetHeight * scale,
-            width: el.offsetWidth * scale,
-            style: {
-                transform: `scale(${scale})`,
-                transformOrigin: 'top left',
-                width: `${el.offsetWidth}px`,
-                height: `${el.offsetHeight}px`
-            }
+        el.toBlob((blob) => {
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = caption+".jpg";
+            link.click();
         })
-            .then(function (dataUrl) {
-                var link = document.createElement('a');
-                link.download = caption+'.jpg';
-                link.href = dataUrl;
-                link.click();
-            });
     }
 
     const readExif = async (blob) => {
@@ -138,11 +185,12 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
     }, [settings.exif]);
 
     return (
-        <label ref={canvasRef} htmlFor={'uploadImg'} className={className} style={{
+        <label htmlFor={'uploadImg'} className={className} style={{
             flexShrink: 0,
-            width,
-            height,
-            display: 'block',
+            height: 840,
+            width: 378,
+            display: 'flex',
+            alignItems: 'center',
             position: 'relative',
             overflow: 'clip',
             border: (!isImgUploaded ? '3px dashed #364462' : 'none'),
@@ -150,49 +198,11 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
             cursor: 'pointer',
         }}>
             <input type={'file'} id="uploadImg" onChange={uploadImage} onDrop={uploadImage} className={'hidden'} />
-            <canvas ref={canvasBackRef} style={{
+            <canvas ref={canvasRef} style={{
                 position:'absolute',
-                top: 0,
-                // zIndex: -8,
-                transform: 'scale(1.3)',
-                filter: 'blur('+settings.background_blur+'px)',
-                width: '100%', height: '100%',
-                objectFit: 'cover',
+                top: (isImgUploaded ? 0 : ''),
+                width: '100%',
             }}></canvas>
-
-            <div style={{
-                width, height,
-                position: 'absolute',
-                top: 0,
-                zIndex: 0,
-                background: settings.background === 'light' ? '#ffffff' : '#000000',
-                filter: 'opacity('+settings.background_overlay_opacity+')',
-            }}></div>
-            <div style={{
-                position: 'absolute',
-                zIndex: 10,
-                transform: 'translateX(-50%) translateY(-50%) scale(' + settings.foreground_image_scale + ')',
-                left: '50%',
-                top: 'calc(50% + 8px)',
-                width: '100%'
-            }}>
-                <canvas
-                    ref={canvasForeRef}
-                    style={{
-                        maxHeight: '100%',
-                        maxWidth: '100%',
-                        borderRadius: settings.border_radius + 'px',
-                    }}
-                ></canvas>
-                <svg viewBox={exifDim} style={{
-                    padding: '5px 0',
-                    width: '50%',
-                    display: 'flex',
-                    justifyContent: 'space-between'
-                }}>
-                    <text x="0" y="15" dangerouslySetInnerHTML={{__html: settings.exif}} fill={(settings.background === 'light' ? '#000' : '#fff')} />
-                </svg>
-            </div>
         </label>
     );
 });

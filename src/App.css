@@ -87,7 +87,7 @@ label {
 
 .canvas-holder {
     /*@apply dark:text-gray-200;*/
-    &::before {
+    /*&::before {
         display: block;
         position: relative;
         z-index: -10;
@@ -98,5 +98,5 @@ label {
         height: 100%;
         top: -5px;
         transform: translateY(50%);
-    }
+    }*/
 }
