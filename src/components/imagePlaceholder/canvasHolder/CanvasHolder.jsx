@@ -15,16 +15,39 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
     }
 
     const [isImgUploaded, setIsImgUploaded] = useState(false);
+    const [exifDim, setExifDim] = useState('');
+
     const {settings, setSettings} = useContext(SettingsContext);
     const {calcWidth, calcHeight} = useCalculatedCanvasDimensions();
-    const [exifDim, setExifDim] = useState('');
 
     const canvasRef = useRef();
     const settingsRef = useRef(settings);
 
     useEffect(() => {
+        drawInitCanvas('Click to pick an image');
+    }, []);
+
+    useEffect(() => {
         settingsRef.current = settings;
     }, [settings]);
+
+    const drawInitCanvas = (text) => {
+        const ctx = canvasRef.current.getContext('2d');
+        const width = canvasRef.current.width;
+        const height = canvasRef.current.height;
+
+        // save the unaltered context
+        ctx.save();
+
+        ctx.font = "10px Inter";
+        const approxFontHeight = parseInt(ctx.font);
+        ctx.fillStyle = '#afafaf';
+        ctx.textAlign = "center";
+        ctx.fillText(text, width / 2, (height / 2) + approxFontHeight / 2);
+
+        // restore the unaltered context
+        ctx.restore();
+    }
 
     const uploadImage = (e) => {
         e.preventDefault();
