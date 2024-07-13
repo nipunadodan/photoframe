@@ -20,8 +20,10 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
     const {settings, setSettings} = useContext(SettingsContext);
     const {calcWidth, calcHeight} = useCalculatedCanvasDimensions();
 
-    const canvasRef = useRef();
     const settingsRef = useRef(settings);
+    const canvasRef = useRef();
+    const ctxRef = useRef();
+    const imgRef = useRef();
 
     useEffect(() => {
         drawInitCanvas('Click to pick an image');
@@ -29,10 +31,31 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
 
     useEffect(() => {
         settingsRef.current = settings;
+
+        if (ctxRef.current && imgRef.current) {
+            clearThumbnail();
+            drawThumbnail(ctxRef.current,imgRef.current);
+        }
     }, [settings]);
 
+    useImperativeHandle(ref, () => {
+        return {
+            copy() {
+                copyImage();
+            },
+            save() {
+                saveImage();
+            },
+            resetThumb() {
+                resetThumbnail();
+            }
+        }
+    }, []);
+
     const drawInitCanvas = (text) => {
-        const ctx = canvasRef.current.getContext('2d');
+        const ctx = ctxRef.current || canvasRef.current.getContext('2d');
+        ctxRef.current = ctxRef.current ?? ctx;
+
         const width = canvasRef.current.width;
         const height = canvasRef.current.height;
 
@@ -52,51 +75,18 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
     const uploadImage = (e) => {
         e.preventDefault();
 
-        thumbnail(canvasRef, e.target.files[0]);
+        thumbnail(e.target.files[0]);
     }
 
-    function thumbnail(ref, blob){
-        const ctx = ref.current.getContext('2d');
+    function thumbnail(blob){
+        const ctx = ctxRef.current || canvasRef.current.getContext('2d');
         const reader = new FileReader();
-        const canvasWidth = calcWidth;
-        const canvasHeight = calcHeight;
 
         reader.onload = function(event){
             const img = new Image();
 
             img.onload = function(){
-                ref.current.width = canvasWidth;
-                ref.current.height = canvasHeight;
-
-                ctx.save();
-
-                // draw background image with a blur
-                ctx.filter = 'blur('+settings.background_blur+'px)';
-                drawImageCover(ctx, img, 0, 0, canvasWidth, canvasHeight, 1.3);
-
-                // draw overlay
-                ctx.restore();
-                ctx.beginPath();
-                ctx.fillStyle = settings.background === 'dark' ? '#000000' : '#ffffff';
-                ctx.filter = 'opacity('+settings.background_overlay_opacity+')';
-                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-                ctx.restore();
-                ctx.filter = 'none';
-
-                ctx.save();
-
-                // create rounded rectangle
-                ctx.beginPath();
-                const {drawWidth, drawHeight, offsetX, offsetY} = dimsContain(img, 0, 0, canvasWidth, canvasHeight, settings.foreground_image_scale);
-                ctx.roundRect(offsetX, offsetY, drawWidth, drawHeight, settings.border_radius);
-                ctx.closePath();
-                ctx.clip();
-
-                // draw foreground image
-                drawImageContain(ctx, img, 0, 0, canvasWidth, canvasHeight, settings.foreground_image_scale);
-
-                ctx.restore();
+                drawThumbnail(ctx, img);
             }
 
             img.src = event.target.result;
@@ -109,18 +99,57 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         setIsImgUploaded(true);
     }
 
-    useImperativeHandle(ref, () => {
-        return {
-            copy() {
-                copyImage();
-            },
-            save() {
-                saveImage();
-            }
-        }
-    }, []);
+    const drawThumbnail = (ctx, img) => {
+        const canvasWidth = calcWidth;
+        const canvasHeight = calcHeight;
 
-    const copyImage = useCallback(() => {
+        canvasRef.current.width = canvasWidth;
+        canvasRef.current.height = canvasHeight;
+        imgRef.current = img;
+
+        ctx.save();
+
+        // draw background image with a blur
+        ctx.filter = 'blur('+settings.background_blur+'px)';
+        drawImageCover(ctx, img, 0, 0, canvasWidth, canvasHeight, 1.3);
+
+        // draw overlay
+        ctx.restore();
+        ctx.beginPath();
+        ctx.fillStyle = settings.background === 'dark' ? '#000000' : '#ffffff';
+        ctx.filter = 'opacity('+settings.background_overlay_opacity+')';
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        // reset filters
+        ctx.restore();
+        ctx.filter = 'none';
+
+        ctx.save();
+
+        // create rounded rectangle
+        ctx.beginPath();
+        const {drawWidth, drawHeight, offsetX, offsetY} = dimsContain(img, 0, 0, canvasWidth, canvasHeight, settings.foreground_image_scale);
+        ctx.roundRect(offsetX, offsetY, drawWidth, drawHeight, settings.border_radius);
+        ctx.closePath();
+        ctx.clip();
+
+        // draw foreground image
+        drawImageContain(ctx, img, 0, 0, canvasWidth, canvasHeight, settings.foreground_image_scale);
+
+        ctx.restore();
+    }
+
+    const clearThumbnail = () => {
+        ctxRef.current.clearRect(0, 0, imgRef.current.width, imgRef.current.height);
+    }
+
+    const resetThumbnail = () => {
+        setIsImgUploaded(false);
+        clearThumbnail();
+        drawInitCanvas('Click to pick an image');
+    }
+
+    const copyImage = () => {
         const el = canvasRef.current;
 
         setSettings({
@@ -131,8 +160,6 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         el.toBlob((blob) => {
             navigator.clipboard.write([new ClipboardItem({'image/png': blob})])
                 .then(() => {
-                    console.log('copied');
-
                     setSettings({
                         ...settingsRef.current,
                         copying: 2,
@@ -146,7 +173,7 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
                     }, 8000);
                 });
         });
-    }, [settings]);
+    };
 
     const saveImage = () => {
         const el = canvasRef.current;
@@ -179,11 +206,6 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
             });
     }
 
-    useEffect(() => {
-        const exifWidth = getTextWidth(settings.exif, 'normal 16px Inter');
-        setExifDim('0 0 ' + exifWidth + ' 16');
-    }, [settings.exif]);
-
     return (
         <label htmlFor={'uploadImg'} className={className} style={{
             flexShrink: 0,
@@ -200,7 +222,7 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
             <input type={'file'} id="uploadImg" onChange={uploadImage} onDrop={uploadImage} className={'hidden'} />
             <canvas ref={canvasRef} style={{
                 position:'absolute',
-                top: (isImgUploaded ? 0 : ''),
+                top: '',
                 width: '100%',
             }}></canvas>
         </label>

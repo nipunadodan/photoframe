@@ -17,6 +17,9 @@ export const Home = () => {
                 case 'save':
                     canvasRef.current.save();
                     break;
+                case 'resetThumb':
+                    canvasRef.current.resetThumb();
+                    break;
             }
         }
     }

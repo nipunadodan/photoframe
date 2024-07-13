@@ -69,7 +69,7 @@ export const SettingsPanel = () => {
                             name={'background_blur'}
                             value={settings.background_blur}
                             min={0}
-                            max={40}
+                            max={80}
                             step={1}
                             onChange={setSettingsGlobal}
                         />
