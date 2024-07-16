@@ -5,6 +5,8 @@ import './canvasHolder.css'
 import exifr from 'exifr';
 import { dimsContain, drawImageContain, drawImageCover, fractions, getTextWidth } from '../../../utils/index.js';
 import { useCalculatedCanvasDimensions } from '../../../custom-hooks/calcCanvasDim.js';
+import { drawExif } from '../../../utils/drawFunctions.js';
+import { calcTextDims } from '../../../utils/textWidth.js';
 
 // eslint-disable-next-line react/display-name
 export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
@@ -26,7 +28,7 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
     const imgRef = useRef();
 
     useEffect(() => {
-        drawInitCanvas('Click to pick an image');
+        drawInitCanvas('Click to pick an Image');
     }, []);
 
     useEffect(() => {
@@ -56,13 +58,15 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         const ctx = ctxRef.current || canvasRef.current.getContext('2d');
         ctxRef.current = ctxRef.current ?? ctx;
 
-        const width = canvasRef.current.width;
-        const height = canvasRef.current.height;
+        const width = 1000;
+        const height = 840;
+        canvasRef.current.width = width;
+        canvasRef.current.height = height;
 
         // save the unaltered context
         ctx.save();
 
-        ctx.font = "10px Inter";
+        ctx.font = "15px Inter";
         const approxFontHeight = parseInt(ctx.font);
         ctx.fillStyle = '#afafaf';
         ctx.textAlign = "center";
@@ -76,6 +80,7 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         e.preventDefault();
 
         thumbnail(e.target.files[0]);
+        e.target.value = '';
     }
 
     function thumbnail(blob){
@@ -135,8 +140,12 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
 
         // draw foreground image
         drawImageContain(ctx, img, 0, 0, canvasWidth, canvasHeight, settings.foreground_image_scale);
-
         ctx.restore();
+
+        const foreImgDims = dimsContain(img, 0, 0, canvasWidth, canvasHeight, settings.foreground_image_scale);
+        const textDims = calcTextDims(foreImgDims, settings.longest_edge);
+
+        drawExif(ctx, textDims, foreImgDims.drawWidth, settings);
     }
 
     const clearThumbnail = () => {
@@ -210,10 +219,10 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         <label htmlFor={'uploadImg'} className={className} style={{
             flexShrink: 0,
             height: 840,
-            width: 378,
+            maxWidth: 1000,
             display: 'flex',
-            alignItems: 'center',
-            position: 'relative',
+            // alignItems: 'center',
+            // position: 'relative',
             overflow: 'clip',
             border: (!isImgUploaded ? '3px dashed #364462' : 'none'),
             borderRadius: (!isImgUploaded ? '30px' : '0'),
@@ -221,9 +230,10 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         }}>
             <input type={'file'} id="uploadImg" onChange={uploadImage} onDrop={uploadImage} className={'hidden'} />
             <canvas ref={canvasRef} style={{
-                position:'absolute',
-                top: '',
+                //position:'absolute',
+                //top: '',
                 width: '100%',
+                objectFit: 'contain',
             }}></canvas>
         </label>
     );

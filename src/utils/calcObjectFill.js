@@ -15,7 +15,12 @@ export const dimsCover = (img, x, y, width, height, scale = 1) => {
     offsetX = (width - drawWidth) / 2;
     offsetY = (height - drawHeight) / 2;
 
-    return {drawWidth, drawHeight, offsetX, offsetY}
+    return {
+        drawWidth: Math.round(drawWidth),
+        drawHeight: Math.round(drawHeight),
+        offsetX: Math.round(offsetX),
+        offsetY: Math.round(offsetY)
+    }
 }
 
 export const dimsContain = (img, x, y, width, height, scale = 1) => {
@@ -35,17 +40,10 @@ export const dimsContain = (img, x, y, width, height, scale = 1) => {
     offsetX = (width - drawWidth) / 2;
     offsetY = (height - drawHeight) / 2;
 
-    return {drawWidth, drawHeight, offsetX, offsetY}
-}
-
-export const drawImageCover = (ctx, img, x, y, width, height, scale = 1) => {
-    const {drawWidth, drawHeight, offsetX, offsetY} = dimsCover(img, x, y, width, height, scale)
-
-    ctx.drawImage(img, x + offsetX, y + offsetY, drawWidth, drawHeight);
-}
-
-export const drawImageContain = (ctx, img, x, y, width, height, scale = 1) => {
-    const {drawWidth, drawHeight, offsetX, offsetY} = dimsContain(img, x, y, width, height, scale);
-
-    ctx.drawImage(img, x + offsetX, y + offsetY, drawWidth, drawHeight);
+    return {
+        drawWidth: Math.round(drawWidth),
+        drawHeight: Math.round(drawHeight),
+        offsetX: Math.round(offsetX),
+        offsetY: Math.round(offsetY)
+    }
 }
