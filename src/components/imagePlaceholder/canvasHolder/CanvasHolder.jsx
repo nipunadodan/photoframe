@@ -1,12 +1,13 @@
-import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SettingsContext } from '../../../context/SettingsContext.jsx';
 import './canvasHolder.css'
 import exifr from 'exifr';
-import { dimsContain, drawImageContain, drawImageCover, fractions, getTextWidth } from '../../../utils/index.js';
+import { dimsContain, drawImageContain, drawImageCover, fractions } from '../../../utils/index.js';
 import { useCalculatedCanvasDimensions } from '../../../custom-hooks/calcCanvasDim.js';
 import { drawExif } from '../../../utils/drawFunctions.js';
 import { calcTextDims } from '../../../utils/textWidth.js';
+import interUrl from '/src/assets/fonts/inter-v.ttf'
 
 // eslint-disable-next-line react/display-name
 export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
@@ -54,7 +55,11 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         }
     }, []);
 
-    const drawInitCanvas = (text) => {
+    const drawInitCanvas = async (text) => {
+        let font = new FontFace('Inter', `url(${interUrl})`);
+        await font.load();
+        document.fonts.add(font);
+
         const ctx = ctxRef.current || canvasRef.current.getContext('2d');
         ctxRef.current = ctxRef.current ?? ctx;
 
@@ -83,14 +88,14 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         e.target.value = '';
     }
 
-    function thumbnail(blob){
+    function thumbnail(blob) {
         const ctx = ctxRef.current || canvasRef.current.getContext('2d');
         const reader = new FileReader();
 
-        reader.onload = function(event){
+        reader.onload = function (event) {
             const img = new Image();
 
-            img.onload = function(){
+            img.onload = function () {
                 drawThumbnail(ctx, img);
             }
 

@@ -15,7 +15,7 @@ export const drawImageContain = (ctx, img, x, y, width, height, scale = 1) => {
 export const drawExif = (ctx, {offsetX, offsetY, font}, foreImgWidth, settings) => {
     const halfWidth = foreImgWidth / 2;
 
-    ctx.font = font.fontSize + 'px Inter bold';
+    ctx.font = font.fontSize + 'px Inter';
     ctx.fillStyle = '#afafaf';
 
     if (settings.exif_enabled && settings.exif !== '') {
