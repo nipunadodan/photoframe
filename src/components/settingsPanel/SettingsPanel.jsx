@@ -177,15 +177,9 @@ export const SettingsPanel = () => {
                         onChange={setSettingsGlobal}
                     />
                     <Check
-                        name={'camera_make_enabled'}
-                        label={'Camera Make'}
-                        status={settings.camera_make_enabled}
-                        onChange={setSettingsGlobal}
-                    />
-                    <Check
-                        name={'lens_info_enabled'}
-                        label={'Lens Info'}
-                        status={settings.lens_info_enabled}
+                        name={'caption_enabled'}
+                        label={'Caption'}
+                        status={settings.caption_enabled}
                         onChange={setSettingsGlobal}
                     />
                 </div>

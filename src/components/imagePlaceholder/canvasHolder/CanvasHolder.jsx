@@ -7,7 +7,6 @@ import { dimsContain, drawImageContain, drawImageCover, fractions } from '../../
 import { useCalculatedCanvasDimensions } from '../../../custom-hooks/calcCanvasDim.js';
 import { drawExif } from '../../../utils/drawFunctions.js';
 import { calcTextDims } from '../../../utils/textWidth.js';
-import interUrl from '/src/assets/fonts/inter-v.ttf'
 
 // eslint-disable-next-line react/display-name
 export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
@@ -29,7 +28,7 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
     const imgRef = useRef();
 
     useEffect(() => {
-        drawInitCanvas('Click to pick an Image');
+        drawInitCanvas('Click to pick an image');
     }, []);
 
     useEffect(() => {
@@ -40,6 +39,10 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
             drawThumbnail(ctxRef.current,imgRef.current);
         }
     }, [settings]);
+
+    useEffect(() => {
+        loadFont(settings.caption_fonts[settings.caption_font]);
+    }, [settings.caption_font]);
 
     useImperativeHandle(ref, () => {
         return {
@@ -55,8 +58,15 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         }
     }, []);
 
+    const loadFont = async (font) => {
+        const fontLoaded = new FontFace(font.font_family, `url(${font.font_url})`);
+        await fontLoaded.load();
+        document.fonts.add(fontLoaded);
+    }
+
     const drawInitCanvas = async (text) => {
-        let font = new FontFace('Inter', `url(${interUrl})`);
+        const interApiUrl = 'https://fonts.gstatic.com/s/inter/v13/UcCo3FwrK3iLTfvlaQc78lA2.ttf';
+        const font = new FontFace('Inter', `url(${interApiUrl})`);
         await font.load();
         document.fonts.add(font);
 

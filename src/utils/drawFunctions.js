@@ -12,11 +12,9 @@ export const drawImageContain = (ctx, img, x, y, width, height, scale = 1) => {
     ctx.drawImage(img, x + offsetX, y + offsetY, drawWidth, drawHeight);
 }
 
-export const drawExif = (ctx, {offsetX, offsetY, font}, foreImgWidth, settings) => {
-    const halfWidth = foreImgWidth / 2;
-
+export const drawExif = async (ctx, {offsetX, offsetY, font}, foreImgWidth, settings) => {
     ctx.font = font.fontSize + 'px Inter';
-    ctx.fillStyle = '#afafaf';
+    ctx.fillStyle = '#fff';
 
     if (settings.exif_enabled && settings.exif !== '') {
         ctx.textAlign = 'left';
@@ -24,9 +22,12 @@ export const drawExif = (ctx, {offsetX, offsetY, font}, foreImgWidth, settings) 
     }
 
     if (settings.caption_enabled && settings.caption !== '') {
+        font.font_family = settings.caption_fonts[settings.caption_font].font;
+        font.font_url = settings.caption_fonts[settings.caption_font].font_url;
+
         ctx.letterSpacing = font.letterSpacing + 'px';
-        ctx.font = 'bold ' + font.fontSize + 'px Inter';
+        ctx.font = 'bold ' + font.fontSize + 'px ' + font.font_family;
         ctx.textAlign = "right";
-        ctx.fillText(settings.caption.toUpperCase(), offsetX + foreImgWidth, offsetY, halfWidth);
+        ctx.fillText(settings.caption, offsetX + foreImgWidth, offsetY);
     }
 }
