@@ -207,8 +207,6 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
 
         exifr.parse(file)
             .then((output) => {
-                console.log(output)
-
                 const camera_make = (output.Make === 'NIKON CORPORATION' ? '' : (output.Make + ' ')) + output.Model;
 
                 const lens_info = output.LensModel ?? '';
