@@ -28,7 +28,7 @@ export const SettingsActions = ({command}) => {
                            value={(settings.copying === 1 ? 'COPYING...' : (settings.copying === 2 ? 'COPIED' : 'COPY'))} onClick={() => command('copy')}/>
                 </div>
             </div>
-            <footer className={'px-3 text-xs text-gray-300 dark:text-gray-600'}>&copy; <a className={'underline'} href={'https://nipunadodan.com'}>nipunadodan.com</a> Photo with Frame | version 2.2</footer>
+            <footer className={'px-3 text-xs text-gray-300 dark:text-gray-600'}>Photo with Frame | Created with ❤️ by <a className={'underline'} href={'https://nipunadodan.com'}>Nipuna Dodantenna</a> | ver. 2.3</footer>
         </>
     );
 };

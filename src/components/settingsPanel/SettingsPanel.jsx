@@ -165,9 +165,9 @@ export const SettingsPanel = () => {
 
                 <div className={'flex flex-row gap-8'}>
                     <Check
-                        name={'watermark_enabled'}
-                        label={'Watermark'}
-                        status={settings.watermark_enabled}
+                        name={'caption_enabled'}
+                        label={'Caption'}
+                        status={settings.caption_enabled}
                         onChange={setSettingsGlobal}
                     />
                     <Check

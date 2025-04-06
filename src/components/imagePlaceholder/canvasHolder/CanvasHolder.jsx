@@ -217,8 +217,10 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
 
         exifr.parse(file)
             .then((output) => {
-                const camera_make = (output.Make === 'NIKON CORPORATION' ? '' : output.Make) + ' ' + output.Model;
+                const camera_make = (output.Make === 'NIKON CORPORATION' ? '' : (output.Make + ' ')) + output.Model;
+
                 const lens_info = output.LensModel ?? '';
+
                 const exif = (output.ExposureTime < 0.1 ? fractions(output.ExposureTime) : output.ExposureTime) + ' s • f/' + output.FNumber + ' • ' + output.FocalLength + ' mm • ISO ' + output.ISO;
 
                 setSettings({
