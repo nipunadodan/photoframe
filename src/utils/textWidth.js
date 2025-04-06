@@ -9,14 +9,17 @@ export function getTextWidth(text, font) {
 }
 
 export const calcTextDims = (foreImgDims, longest_edge) => {
-    const fontSize = 8 / 840 * longest_edge;
+    const fontSize = 9 / 840 * longest_edge;
     const letterSpacing = 4 / 840 * longest_edge;
+    const lineHeight = 15 / 840 * longest_edge;
+
     return {
         offsetX: Math.round(foreImgDims.offsetX),
         offsetY: Math.round(foreImgDims.offsetY + foreImgDims.drawHeight + (fontSize + foreImgDims.drawWidth * .02)),
         font: {
             fontSize,
             letterSpacing,
+            lineHeight,
         }
       }
 }

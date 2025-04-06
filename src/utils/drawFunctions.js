@@ -21,6 +21,14 @@ export const drawExif = (ctx, {offsetX, offsetY, font}, foreImgWidth, settings) 
     if (settings.exif_enabled && settings.exif !== '') {
         ctx.textAlign = 'left';
         ctx.fillText(settings.exif, offsetX + foreImgWidth * .01, offsetY);
+
+        if(settings.camera_make_enabled && settings.camera_make){
+            ctx.fillText(settings.camera_make, offsetX + foreImgWidth * .01, offsetY + font.lineHeight);
+        }
+
+        if(settings.lens_info_enabled && settings.lens_info){
+            ctx.fillText(settings.lens_info, offsetX + foreImgWidth * .01, offsetY + (settings.camera_make_enabled && settings.camera_make ? font.lineHeight * 2 : font.lineHeight));
+        }
     }
 
     if (settings.caption_enabled && settings.caption !== '') {

@@ -25,6 +25,6 @@ export const TextInput = ({name, type, initval, placeholder, onChange, className
     }
 
     return (
-        <input type={type} name={'text'} value={value} onChange={handleOnChange} className={'border border-gray-200 dark:border-gray-400 dark:bg-gray-700 outline-0 py-2 px-3 rounded-lg inline-flex ' + className} placeholder={placeholder} />
+        <input type={type} name={'text'} value={value} onChange={handleOnChange} className={'border-[3px] border-gray-200 dark:border-gray-400 dark:bg-gray-700 outline-0 py-2 px-3 rounded-lg inline-flex ' + className} placeholder={placeholder} />
     );
 };
