@@ -1,23 +1,24 @@
-import { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import {forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
-import { SettingsContext } from '../../../context/SettingsContext.jsx';
-import './canvasHolder.css'
+import {SettingsContext} from '../../../context/SettingsContext.jsx';
+import './canvasHolder.css';
 import exifr from 'exifr';
-import { dimsContain, drawImageContain, drawImageCover, fractions } from '../../../utils/index.js';
-import { useCalculatedCanvasDimensions } from '../../../custom-hooks/calcCanvasDim.js';
-import { drawExif } from '../../../utils/drawFunctions.js';
-import { calcTextDims } from '../../../utils/textWidth.js';
+import {dimsContain, drawImageContain, drawImageCover, fractions} from '../../../utils/index.js';
+import {useCalculatedCanvasDimensions} from '../../../custom-hooks/calcCanvasDim.js';
+import {drawExif} from '../../../utils/drawFunctions.js';
+import {calcTextDims} from '../../../utils/textWidth.js';
 
-// eslint-disable-next-line react/display-name
+// eslint-disable-next-line react/display-name,no-unused-vars
 export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
     CanvasHolder.propTypes = {
         width: PropTypes.number,
         height: PropTypes.number,
         className: PropTypes.string,
-    }
+    };
 
     const [isImgUploaded, setIsImgUploaded] = useState(false);
-    const [exifDim, setExifDim] = useState('');
+    const [isDragging, setIsDragging] = useState(false);
+    // const [exifDim, setExifDim] = useState('');
 
     const {settings, setSettings} = useContext(SettingsContext);
     const {calcWidth, calcHeight} = useCalculatedCanvasDimensions();
@@ -36,12 +37,14 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
 
         if (ctxRef.current && imgRef.current) {
             clearThumbnail();
-            drawThumbnail(ctxRef.current,imgRef.current);
+            drawThumbnail(ctxRef.current, imgRef.current);
         }
     }, [settings]);
 
     useEffect(() => {
-        loadFont(settings.caption_fonts[settings.caption_font]);
+        if (typeof settings!=='undefined' && typeof settings.caption_fonts!=='undefined') {
+            loadFont(settings?.caption_fonts[settings.caption_font]);
+        }
     }, [settings.caption_font]);
 
     useImperativeHandle(ref, () => {
@@ -54,15 +57,15 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
             },
             resetThumb() {
                 resetThumbnail();
-            }
-        }
+            },
+        };
     }, []);
 
     const loadFont = async (font) => {
         const fontLoaded = new FontFace(font.font_family, `url(${font.font_url})`);
         await fontLoaded.load();
         document.fonts.add(fontLoaded);
-    }
+    };
 
     const drawInitCanvas = async (text) => {
         const interApiUrl = 'https://fonts.gstatic.com/s/inter/v13/UcCo3FwrK3iLTfvlaQc78lA2.ttf';
@@ -81,22 +84,50 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         // save the unaltered context
         ctx.save();
 
-        ctx.font = "15px Inter";
+        ctx.font = '15px Inter';
         const approxFontHeight = parseInt(ctx.font);
         ctx.fillStyle = '#afafaf';
-        ctx.textAlign = "center";
+        ctx.textAlign = 'center';
         ctx.fillText(text, width / 2, (height / 2) + approxFontHeight / 2);
 
         // restore the unaltered context
         ctx.restore();
-    }
+    };
 
     const uploadImage = (e) => {
         e.preventDefault();
-
         thumbnail(e.target.files[0]);
         e.target.value = '';
-    }
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+
+    const handleDragEnter = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+
+        if (e.dataTransfer?.files?.length) {
+            const file = e.dataTransfer.files[0];
+            thumbnail(file);
+        }
+    };
 
     function thumbnail(blob) {
         const ctx = ctxRef.current || canvasRef.current.getContext('2d');
@@ -107,10 +138,10 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
 
             img.onload = function () {
                 drawThumbnail(ctx, img);
-            }
+            };
 
             img.src = event.target.result;
-        }
+        };
 
         reader.readAsDataURL(blob);
 
@@ -130,14 +161,14 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         ctx.save();
 
         // draw background image with a blur
-        ctx.filter = 'blur('+settings.background_blur+'px)';
+        ctx.filter = 'blur(' + settings.background_blur + 'px)';
         drawImageCover(ctx, img, 0, 0, canvasWidth, canvasHeight, 1.3);
 
         // draw overlay
         ctx.restore();
         ctx.beginPath();
         ctx.fillStyle = settings.background === 'dark' ? '#000000' : '#ffffff';
-        ctx.filter = 'opacity('+settings.background_overlay_opacity+')';
+        ctx.filter = 'opacity(' + settings.background_overlay_opacity + ')';
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
         // reset filters
@@ -161,17 +192,17 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         const textDims = calcTextDims(foreImgDims, settings.longest_edge);
 
         drawExif(ctx, textDims, foreImgDims.drawWidth, settings);
-    }
+    };
 
     const clearThumbnail = () => {
         ctxRef.current.clearRect(0, 0, imgRef.current.width, imgRef.current.height);
-    }
+    };
 
     const resetThumbnail = () => {
         setIsImgUploaded(false);
         clearThumbnail();
         drawInitCanvas('Click to pick an image');
-    }
+    };
 
     const copyImage = () => {
         const el = canvasRef.current;
@@ -179,23 +210,23 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         setSettings({
             ...settingsRef.current,
             copying: 1,
-        })
+        });
 
         el.toBlob((blob) => {
             navigator.clipboard.write([new ClipboardItem({'image/png': blob})])
-                .then(() => {
-                    setSettings({
-                        ...settingsRef.current,
-                        copying: 2,
-                    });
+                     .then(() => {
+                         setSettings({
+                             ...settingsRef.current,
+                             copying: 2,
+                         });
 
-                    setTimeout(() => {
-                        setSettings({
-                            ...settingsRef.current,
-                            copying: 0,
-                        });
-                    }, 8000);
-                });
+                         setTimeout(() => {
+                             setSettings({
+                                 ...settingsRef.current,
+                                 copying: 0,
+                             });
+                         }, 8000);
+                     });
         });
     };
 
@@ -205,35 +236,35 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
 
         el.toBlob((blob) => {
             const url = window.URL.createObjectURL(blob);
-            const link = document.createElement("a");
+            const link = document.createElement('a');
             link.href = url;
-            link.download = caption+".jpg";
+            link.download = caption + '.jpg';
             link.click();
-        })
-    }
+        });
+    };
 
     const readExif = async (blob) => {
         let file = await exifr.readBlobAsArrayBuffer(blob);
 
         exifr.parse(file)
-            .then((output) => {
-                const camera_make = (output.Make === 'NIKON CORPORATION' ? '' : (output.Make + ' ')) + output.Model;
+             .then((output) => {
+                 const camera_make = (output.Make === 'NIKON CORPORATION' ? '' : (output.Make + ' ')) + output.Model;
 
-                const lens_info = output.LensModel ?? '';
+                 const lens_info = output.LensModel ?? '';
 
-                const exif = (output.ExposureTime < 0.1 ? fractions(output.ExposureTime) : output.ExposureTime) + ' s • f/' + output.FNumber + ' • ' + output.FocalLength + ' mm • ISO ' + output.ISO;
+                 const exif = (output.ExposureTime < 0.1 ? fractions(output.ExposureTime) : output.ExposureTime) + ' s • f/' + output.FNumber + ' • ' + output.FocalLength + ' mm • ISO ' + output.ISO;
 
-                setSettings({
-                    ...settings,
-                    camera_make,
-                    lens_info,
-                    exif,
-                });
-            });
-    }
+                 setSettings({
+                     ...settings,
+                     camera_make,
+                     lens_info,
+                     exif,
+                 });
+             });
+    };
 
     return (
-        <label htmlFor={'uploadImg'} className={className} style={{
+        <label htmlFor={'uploadImg'} className={`${className} ${isDragging ? 'dragging' : ''}`} style={{
             flexShrink: 0,
             height: 840,
             maxWidth: 1000,
@@ -244,8 +275,14 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
             border: (!isImgUploaded ? '3px dashed #364462' : 'none'),
             borderRadius: (!isImgUploaded ? '30px' : '0'),
             cursor: 'pointer',
-        }}>
-            <input type={'file'} id="uploadImg" onChange={uploadImage} onDrop={uploadImage} className={'hidden'} />
+            transition: 'border 0.2s, background-color 0.2s',
+        }}
+               onDragOver={handleDragOver}
+               onDragEnter={handleDragEnter}
+               onDragLeave={handleDragLeave}
+               onDrop={handleDrop}>
+
+            <input type={'file'} id="uploadImg" onChange={uploadImage} className={'hidden'} />
             <canvas ref={canvasRef} style={{
                 //position:'absolute',
                 //top: '',
