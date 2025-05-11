@@ -76,8 +76,8 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
         const ctx = ctxRef.current || canvasRef.current.getContext('2d');
         ctxRef.current = ctxRef.current ?? ctx;
 
-        const width = 1000;
         const height = 840;
+        const width = settings.width * height / settings.height;
         canvasRef.current.width = width;
         canvasRef.current.height = height;
 
