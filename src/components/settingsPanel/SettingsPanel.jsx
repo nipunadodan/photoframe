@@ -1,7 +1,7 @@
-import { useContext, useEffect } from 'react';
-import { Check, Toggler, ValueSlider, TextInput } from '../controls/index.js';
-import { SettingsContext } from '../../context/SettingsContext.jsx';
-import { useCalculatedCanvasDimensions } from '../../custom-hooks/calcCanvasDim.js';
+import {useContext, useEffect} from 'react';
+import {Check, Toggler, ValueSlider, TextInput} from '../controls/index.js';
+import {SettingsContext} from '../../context/SettingsContext.jsx';
+import {useCalculatedCanvasDimensions} from '../../custom-hooks/calcCanvasDim.js';
 
 export const SettingsPanel = () => {
     const {settings, setSettings} = useContext(SettingsContext);
@@ -26,9 +26,9 @@ export const SettingsPanel = () => {
             setSettings({
                 ...settings,
                 background_overlay_opacity: 1,
-            })
+            });
         }
-    }, [settings.background])
+    }, [settings.background]);
 
     return (
         <div>
@@ -99,11 +99,26 @@ export const SettingsPanel = () => {
                             name={'foreground_image_scale'}
                             value={settings.foreground_image_scale}
                             min={0}
-                            max={1.5}
+                            max={2.5}
                             step={0.01}
                             onChange={setSettingsGlobal}
                         />
                         <div className={'text-center'}>{settings.foreground_image_scale}</div>
+                    </div>
+                </div>
+
+                <div className={'flex flex-col gap-3'}>
+                    <label>Image Rotation</label>
+                    <div className={'flex flex-row gap-3 items-center'}>
+                        <ValueSlider
+                            name={'image_rotation'}
+                            value={settings.image_rotation}
+                            min={0}
+                            max={360}
+                            step={90}
+                            onChange={setSettingsGlobal}
+                        />
+                        <div className={'text-center'}>{settings.image_rotation}°</div>
                     </div>
                 </div>
 

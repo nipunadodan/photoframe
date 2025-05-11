@@ -12,6 +12,7 @@ const INIT = {
     background_blur: 20,
     border_radius: 20,
     foreground_image_scale: 0.8,
+    image_rotation: 0,
     caption: '',
     caption_enabled: true,
     watermark_enabled: true,
@@ -23,6 +24,19 @@ const INIT = {
     camera_make: '',
     lens_info: '',
     copying: 0,
+    caption_fonts: [
+        {
+            font: 'Inter',
+            font_url: 'https://fonts.gstatic.com/s/inter/v13/UcCo3FwrK3iLTfvlaQc78lA2.ttf'
+        },{
+            font: 'Sacramento',
+            font_url: 'https://fonts.gstatic.com/s/sacramento/v15/buEzpo6gcdjy0EiZMBUG4Csf-A.ttf'
+        },{
+            font: 'Shadows Into Light Two',
+            font_url: 'https://fonts.gstatic.com/s/shadowsintolighttwo/v17/4iC86LVlZsRSjQhpWGedwyOoW-0A6_kpsyNmlAvNGLNnIF0.ttf'
+        }
+    ],
+    caption_font: 2,
 };
 
 const getInitialSettings = () => {
