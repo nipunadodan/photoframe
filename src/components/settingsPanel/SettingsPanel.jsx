@@ -107,7 +107,7 @@ export const SettingsPanel = () => {
                     </div>
                 </div>
 
-                <div className={'flex flex-col gap-3'}>
+                {/*<div className={'flex flex-col gap-3'}>
                     <label>Image Rotation</label>
                     <div className={'flex flex-row gap-3 items-center'}>
                         <ValueSlider
@@ -120,6 +120,11 @@ export const SettingsPanel = () => {
                         />
                         <div className={'text-center'}>{settings.image_rotation}°</div>
                     </div>
+                </div>*/}
+
+                <div className={'flex flex-col items-start gap-2'}>
+                    <label>Orientation</label>
+                    <Toggler name={'image_rotation'} list={[{label: 'ORIGINAL', value: 0}, {label: 'ROTATED', value: 270}]} status={settings.image_rotation} onChange={setSettingsGlobal} />
                 </div>
 
                 <div className={'inline-flex gap-16'}>

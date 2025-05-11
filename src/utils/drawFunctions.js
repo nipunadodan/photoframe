@@ -27,6 +27,17 @@ export const drawExif = async (ctx, {offsetX, offsetY, font}, foreImgWidth, fore
     ctx.font = font.fontSize + 'px Inter';
     ctx.fillStyle = '#fff';
 
+    if (settings.image_rotation > 0 && settings.image_rotation < 360) {
+        // Calculate the center of the image
+        const centerX = offsetX + foreImgWidth / 2;
+        const centerY = offsetY + foreImgHeight / 2;
+
+        // Translate to the center, rotate, and translate back
+        ctx.translate(centerX, centerY);
+        ctx.rotate(settings.image_rotation * Math.PI / 180);
+        ctx.translate(-centerX, -centerY);
+    }
+
     if (settings.exif_enabled && settings.exif !== '') {
         ctx.textAlign = 'left';
         ctx.fillText(settings.exif, offsetX + foreImgWidth * .01, offsetY);
@@ -48,16 +59,6 @@ export const drawExif = async (ctx, {offsetX, offsetY, font}, foreImgWidth, fore
         ctx.font = 'bold ' + font.fontSize + 'px ' + font.font_family;
         ctx.textAlign = 'right';
 
-        if (settings.image_rotation > 0 && settings.image_rotation < 360) {
-            // Calculate the center of the image
-            const centerX = offsetX + foreImgWidth / 2;
-            const centerY = offsetY + foreImgHeight / 2;
-
-            // Translate to the center, rotate, and translate back
-            ctx.translate(centerX, centerY);
-            ctx.rotate(settings.image_rotation * Math.PI / 180);
-            ctx.translate(-centerX, -centerY);
-        }
 
         ctx.fillText(settings.caption, offsetX + foreImgWidth, offsetY);
     }
