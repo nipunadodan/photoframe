@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import {createContext, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 
 const INIT = {
@@ -27,16 +27,16 @@ const INIT = {
     caption_fonts: [
         {
             font: 'Inter',
-            font_url: 'https://fonts.gstatic.com/s/inter/v13/UcCo3FwrK3iLTfvlaQc78lA2.ttf'
-        },{
+            font_url: 'https://fonts.gstatic.com/s/inter/v13/UcCo3FwrK3iLTfvlaQc78lA2.ttf',
+        }, {
             font: 'Sacramento',
-            font_url: 'https://fonts.gstatic.com/s/sacramento/v15/buEzpo6gcdjy0EiZMBUG4Csf-A.ttf'
-        },{
+            font_url: 'https://fonts.gstatic.com/s/sacramento/v15/buEzpo6gcdjy0EiZMBUG4Csf-A.ttf',
+        }, {
             font: 'Shadows Into Light Two',
-            font_url: 'https://fonts.gstatic.com/s/shadowsintolighttwo/v17/4iC86LVlZsRSjQhpWGedwyOoW-0A6_kpsyNmlAvNGLNnIF0.ttf'
-        }
+            font_url: 'https://fonts.gstatic.com/s/shadowsintolighttwo/v17/4iC86LVlZsRSjQhpWGedwyOoW-0A6_kpsyNmlAvNGLNnIF0.ttf',
+        },
     ],
-    caption_font: 2,
+    caption_font: 0,
 };
 
 const getInitialSettings = () => {
@@ -52,9 +52,9 @@ const getInitialSettings = () => {
 
 export const SettingsContext = createContext();
 
-export const SettingsProvider = ({ children }) => {
+export const SettingsProvider = ({children}) => {
     SettingsProvider.propTypes = {
-        children: PropTypes.node
+        children: PropTypes.node,
     };
 
     const [settings, setSettings] = useState(getInitialSettings);
@@ -67,7 +67,7 @@ export const SettingsProvider = ({ children }) => {
             camera_make: '',
             lens_info: '',
         }));
-    }
+    };
 
     const resetSettings = () => {
         setSettings({
@@ -77,11 +77,11 @@ export const SettingsProvider = ({ children }) => {
             camera_make: settings.camera_make,
             lens_info: settings.lens_info,
         });
-    }
+    };
 
     useEffect(() => {
         saveSettings();
     }, [settings]);
 
     return <SettingsContext.Provider value={{settings, setSettings, resetSettings}}>{children}</SettingsContext.Provider>;
-}
+};
