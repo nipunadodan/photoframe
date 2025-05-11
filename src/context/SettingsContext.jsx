@@ -12,6 +12,7 @@ const INIT = {
     background_blur: 20,
     border_radius: 20,
     foreground_image_scale: 0.8,
+    image_rotation: 0,
     caption: '',
     caption_enabled: true,
     watermark_enabled: true,

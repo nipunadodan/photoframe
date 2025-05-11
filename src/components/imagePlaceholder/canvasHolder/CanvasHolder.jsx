@@ -42,7 +42,7 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
     }, [settings]);
 
     useEffect(() => {
-        if (typeof settings!=='undefined' && typeof settings.caption_fonts!=='undefined') {
+        if (typeof settings !== 'undefined' && typeof settings.caption_fonts !== 'undefined') {
             loadFont(settings?.caption_fonts[settings.caption_font]);
         }
     }, [settings.caption_font]);
@@ -162,7 +162,7 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
 
         // draw background image with a blur
         ctx.filter = 'blur(' + settings.background_blur + 'px)';
-        drawImageCover(ctx, img, 0, 0, canvasWidth, canvasHeight, 1.3);
+        drawImageCover(ctx, img, 0, 0, canvasWidth, canvasHeight, settings, 1.3);
 
         // draw overlay
         ctx.restore();
@@ -177,21 +177,35 @@ export const CanvasHolder = forwardRef(({width, height, className}, ref) => {
 
         ctx.save();
 
+        let {drawWidth, drawHeight, offsetX, offsetY} = dimsContain(img, 0, 0, canvasWidth, canvasHeight, settings.foreground_image_scale);
+
+        // Apply rotation if needed
+        if (settings.image_rotation > 0 && settings.image_rotation < 360) {
+            // Calculate the center of the image
+            const centerX = offsetX + drawWidth / 2;
+            const centerY = offsetY + drawHeight / 2;
+
+            // Translate to the center, rotate, and translate back
+            ctx.translate(centerX, centerY);
+            ctx.rotate(settings.image_rotation * Math.PI / 180);
+            ctx.translate(-centerX, -centerY);
+        }
+
         // create rounded rectangle
         ctx.beginPath();
-        const {drawWidth, drawHeight, offsetX, offsetY} = dimsContain(img, 0, 0, canvasWidth, canvasHeight, settings.foreground_image_scale);
         ctx.roundRect(offsetX, offsetY, drawWidth, drawHeight, settings.border_radius);
         ctx.closePath();
         ctx.clip();
+
 
         // draw foreground image
         drawImageContain(ctx, img, 0, 0, canvasWidth, canvasHeight, settings.foreground_image_scale);
         ctx.restore();
 
         const foreImgDims = dimsContain(img, 0, 0, canvasWidth, canvasHeight, settings.foreground_image_scale);
-        const textDims = calcTextDims(foreImgDims, settings.longest_edge);
+        const textDims = calcTextDims(foreImgDims, settings.longest_edge, settings.image_rotation);
 
-        drawExif(ctx, textDims, foreImgDims.drawWidth, settings);
+        drawExif(ctx, textDims, foreImgDims.drawWidth, foreImgDims.drawHeight, settings);
     };
 
     const clearThumbnail = () => {
