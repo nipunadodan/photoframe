@@ -8,27 +8,28 @@ export const SettingsPanel = () => {
     const {calcWidth, calcHeight} = useCalculatedCanvasDimensions();
 
     const setSettingsGlobal = (name, value) => {
-        setSettings({
-            ...settings,
+        setSettings(prevSettings => ({
+            ...prevSettings,
             [name]: value,
-        });
+        }));
     };
+
     useEffect(() => {
-        setSettings({
-            ...settings,
+        setSettings(prevSettings => ({
+            ...prevSettings,
             width: calcWidth,
             height: calcHeight,
-        });
-    }, [settings.longest_edge, settings.ratio_height, settings.ratio_width]);
+        }));
+    }, [settings.longest_edge, settings.ratio_height, settings.ratio_width, calcWidth, calcHeight, setSettings]);
 
     useEffect(() => {
         if (settings.background === 'off') {
-            setSettings({
-                ...settings,
+            setSettings(prevSettings => ({
+                ...prevSettings,
                 background_overlay_opacity: 1,
-            });
+            }));
         }
-    }, [settings.background]);
+    }, [settings.background, setSettings]);
 
     return (
         <div>
