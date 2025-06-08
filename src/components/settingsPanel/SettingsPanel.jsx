@@ -1,34 +1,35 @@
 import {useContext, useEffect} from 'react';
 import {Check, Toggler, ValueSlider, TextInput} from '../controls/index.js';
 import {SettingsContext} from '../../context/SettingsContext.jsx';
-import {useCalculatedCanvasDimensions} from '../../custom-hooks/calcCanvasDim.js';
+import {useCalculatedCanvasDimensions} from '../../hooks/calcCanvasDim.js';
 
 export const SettingsPanel = () => {
     const {settings, setSettings} = useContext(SettingsContext);
     const {calcWidth, calcHeight} = useCalculatedCanvasDimensions();
 
     const setSettingsGlobal = (name, value) => {
-        setSettings({
-            ...settings,
+        setSettings(prevSettings => ({
+            ...prevSettings,
             [name]: value,
-        });
+        }));
     };
+
     useEffect(() => {
-        setSettings({
-            ...settings,
+        setSettings(prevSettings => ({
+            ...prevSettings,
             width: calcWidth,
             height: calcHeight,
-        });
-    }, [settings.longest_edge, settings.ratio_height, settings.ratio_width]);
+        }));
+    }, [settings.longest_edge, settings.ratio_height, settings.ratio_width, calcWidth, calcHeight, setSettings]);
 
     useEffect(() => {
         if (settings.background === 'off') {
-            setSettings({
-                ...settings,
+            setSettings(prevSettings => ({
+                ...prevSettings,
                 background_overlay_opacity: 1,
-            });
+            }));
         }
-    }, [settings.background]);
+    }, [settings.background, setSettings]);
 
     return (
         <div>
