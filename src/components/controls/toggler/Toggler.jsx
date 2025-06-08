@@ -5,13 +5,16 @@ export const Toggler = ({name, list, status, onChange}) => {
         name: PropTypes.string,
         label: PropTypes.string,
         list: PropTypes.array,
-        status: PropTypes.string,
+        status: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number,
+        ]),
         onChange: PropTypes.func,
     };
 
     const selectOption = (selectedItem) => {
         onChange(name, selectedItem);
-    }
+    };
 
     return (
         <div className="inline-flex flex-row gap-3 bg-gray-100 dark:bg-gray-700 p-2 rounded-full">

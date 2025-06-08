@@ -16,7 +16,7 @@ export const getDefaultFontUrl = (fontFamily) => {
 /**
  * Loads a font from a URL and adds it to the document
  * @param {string} fontFamily - The font family name
- * @param {string} fontUrl - The URL to the font file
+ * @param providedFontUrl
  * @returns {Promise<FontFace>} - The loaded font
  */
 export const loadFont = async (fontFamily, providedFontUrl) => {

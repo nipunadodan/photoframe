@@ -1,7 +1,7 @@
 import {useContext, useEffect} from 'react';
 import {Check, Toggler, ValueSlider, TextInput} from '../controls/index.js';
 import {SettingsContext} from '../../context/SettingsContext.jsx';
-import {useCalculatedCanvasDimensions} from '../../custom-hooks/calcCanvasDim.js';
+import {useCalculatedCanvasDimensions} from '../../hooks/calcCanvasDim.js';
 
 export const SettingsPanel = () => {
     const {settings, setSettings} = useContext(SettingsContext);

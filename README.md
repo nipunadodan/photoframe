@@ -84,3 +84,87 @@ Photo with Frame follows several key design principles:
     - Color contrast meets WCAG guidelines
 
 ### Data Flow
+
+The application follows a unidirectional data flow pattern:
+
+1. User interactions trigger events in components
+2. Components call hook methods to handle these events
+3. Hooks use services to perform operations
+4. Services return results to hooks
+5. Hooks update state
+6. Components re-render based on the new state
+
+### State Management
+
+State is managed at different levels:
+
+- **Local Component State**: For UI-specific state that doesn't affect other components
+- **Custom Hook State**: For domain-specific state that might be shared across multiple components
+- **Context API**: For global state that needs to be accessed throughout the application
+
+## 🔧 Technical Implementation
+
+### Image Processing Workflow
+
+1. User uploads an image via drag-and-drop or file picker
+2. Image is loaded and EXIF data is extracted
+3. Canvas is initialized with appropriate dimensions
+4. Background is drawn with blur effect
+5. Overlay is applied for contrast
+6. Foreground image is drawn with border radius
+7. EXIF data and captions are rendered
+8. User can adjust settings and see real-time updates
+9. Final image can be exported via clipboard or saved as a file
+
+### Performance Optimizations
+
+- **Canvas Redraw Optimization**: Canvas is only redrawn when necessary
+- **Font Caching**: Fonts are loaded once and cached for reuse
+- **Memoization**: React's useMemo and useCallback are used to prevent unnecessary re-renders
+- **Lazy Loading**: Components and resources are loaded only when needed
+
+## 🔒 Security
+
+The application implements several security best practices:
+
+- **Content Security Policy**: Restricts the sources from which content can be loaded
+- **Secure Font Loading**: Fonts are loaded from trusted sources
+- **Local Processing**: All image processing happens locally in the browser, no data is sent to servers
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/photo-with-frame.git
+
+# Navigate to the project directory
+cd photo-with-frame
+
+# Install dependencies
+npm install
+# or
+yarn install
+
+# Start the development server
+npm run dev
+# or
+yarn dev
+```
+
+## 📚 Documentation
+
+For more detailed documentation, please refer to the following resources in the `docs` folder:
+
+- [Architecture Documentation](./docs/ARCHITECTURE.md): Detailed overview of the application architecture, design decisions, and technical implementation.
+- [Changelog](./docs/CHANGELOG.md): Comprehensive documentation of all changes made in the recent development branch.
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
