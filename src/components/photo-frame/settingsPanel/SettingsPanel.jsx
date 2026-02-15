@@ -130,7 +130,7 @@ export const SettingsPanel = () => {
 
                 <div className={'flex flex-col items-start gap-2'}>
                     <label>Orientation</label>
-                    <Toggler name={'image_rotation'} list={[{label: '- 90°', value: (settings.image_rotation - 90 + 360) % 360}, {label: '+ 90°', value: (settings.image_rotation + 90) % 360}]} status={settings.image_rotation} onChange={setSettingsGlobal}/>
+                    <Toggler name={'image_rotation'} list={[{label: '<-', value: (settings.image_rotation - 90 + 360) % 360}, {label: '->', value: (settings.image_rotation + 90) % 360}]} status={settings.image_rotation} onChange={setSettingsGlobal}/>
                 </div>
 
                 <div className={'inline-flex gap-16'}>
