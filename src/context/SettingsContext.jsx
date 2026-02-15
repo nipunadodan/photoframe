@@ -37,6 +37,7 @@ const INIT = {
         },
     ],
     caption_font: 0,
+    caption_letter_spacing: 0,
 };
 
 const getInitialSettings = () => {

@@ -136,7 +136,7 @@ export const createImageDrawer = (ctx, settings) => {
         if (settings.caption_enabled && settings.caption) {
             const fontFamily = settings.caption_fonts[settings.caption_font].font;
 
-            ctx.letterSpacing = font.letterSpacing + 'px';
+            ctx.letterSpacing = settings.caption_letter_spacing ? font.letterSpacing + 'px' : 'normal';
             ctx.font = 'bold ' + font.fontSize + 'px ' + fontFamily;
             ctx.textAlign = 'right';
             ctx.fillText(settings.caption, offsetX + foreImgWidth, offsetY);

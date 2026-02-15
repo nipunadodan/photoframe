@@ -11,8 +11,9 @@ function App() {
             <SettingsProvider>
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/text-canvas" element={<TextCanvas />} />
+                        <Route path="/" element={<Home/>}/>
+                        <Route path="/image-canvas" element={<Home/>}/>
+                        <Route path="/text-canvas" element={<TextCanvas/>}/>
                     </Routes>
                 </BrowserRouter>
             </SettingsProvider>
