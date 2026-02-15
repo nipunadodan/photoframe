@@ -1,8 +1,9 @@
-import { useContext, useEffect, useRef } from 'react';
-import { CanvasHolder } from '../../components/imagePlaceholder/canvasHolder/CanvasHolder.jsx';
-import { SettingsPanel } from '../../components/settingsPanel/SettingsPanel.jsx';
-import { SettingsActions } from '../../components/settingsPanel/SettingsActions.jsx';
-import { SettingsContext } from '../../context/SettingsContext.jsx';
+import {useContext, useEffect, useRef} from 'react';
+// import { CanvasHolder } from '../../components/imagePlaceholder/canvasHolder/CanvasHolder.jsx';
+import {SettingsPanel} from '../../components/photo-frame/settingsPanel/SettingsPanel.jsx';
+import {SettingsActions} from '../../components/photo-frame/settingsPanel/SettingsActions.jsx';
+import {SettingsContext} from '../../context/SettingsContext.jsx';
+import {CanvasHolder} from '../../components/photo-frame/canvas/CanvasHolder.jsx';
 
 export const Home = () => {
     const {settings} = useContext(SettingsContext);
@@ -22,7 +23,7 @@ export const Home = () => {
                     break;
             }
         }
-    }
+    };
 
     useEffect(() => {
 
@@ -30,7 +31,7 @@ export const Home = () => {
 
     return (
         <div className={'flex flex-row gap-6 justify-center items-center w-screen h-screen'}>
-            <CanvasHolder ref={canvasRef} width={settings.width} height={settings.height} className={'canvas-holder'} />
+            <CanvasHolder ref={canvasRef} className={'canvas-holder'} />
             <div>
                 <SettingsPanel />
                 <SettingsActions command={onCommand} />

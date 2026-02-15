@@ -15,7 +15,7 @@ export const calcTextDims = (foreImgDims, longest_edge, rotation) => {
 
     if (rotation > 0 && rotation < 360) {
         return {
-            offsetX: Math.round(foreImgDims.offsetX + foreImgDims.drawHeight + (fontSize + foreImgDims.drawHeight * .02)),
+            offsetX: Math.round(foreImgDims.offsetX + foreImgDims.drawHeight + (fontSize + foreImgDims.drawHeight * .035)),
             offsetY: Math.round(foreImgDims.offsetY),
             font: {
                 fontSize,
@@ -27,7 +27,7 @@ export const calcTextDims = (foreImgDims, longest_edge, rotation) => {
 
     return {
         offsetX: Math.round(foreImgDims.offsetX),
-        offsetY: Math.round(foreImgDims.offsetY + foreImgDims.drawHeight + (fontSize + foreImgDims.drawWidth * .02)),
+        offsetY: Math.round(foreImgDims.offsetY + foreImgDims.drawHeight + (fontSize + foreImgDims.drawWidth * .035)),
         font: {
             fontSize,
             letterSpacing,
