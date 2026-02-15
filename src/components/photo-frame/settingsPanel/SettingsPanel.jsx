@@ -1,7 +1,7 @@
 import {useContext, useEffect} from 'react';
 import {Check, Toggler, ValueSlider, TextInput} from '../controls/index.js';
-import {SettingsContext} from '../../context/SettingsContext.jsx';
-import {useCalculatedCanvasDimensions} from '../../hooks/calcCanvasDim.js';
+import {SettingsContext} from '../../../context/SettingsContext.jsx';
+import {useCalculatedCanvasDimensions} from '../../../hooks/calcCanvasDim.js';
 
 export const SettingsPanel = () => {
     const {settings, setSettings} = useContext(SettingsContext);
@@ -123,9 +123,14 @@ export const SettingsPanel = () => {
                     </div>
                 </div>*/}
 
+                {/*<div className={'flex flex-col items-start gap-2'}>
+                    <label>Orientation</label>
+                    <Toggler name={'image_rotation'} list={[{label: '0°', value: 0}, {label: '90°', value: 90}, {label: '180°', value: 180}, {label: '270°', value: 270}]} status={settings.image_rotation} onChange={setSettingsGlobal}/>
+                </div>*/}
+
                 <div className={'flex flex-col items-start gap-2'}>
                     <label>Orientation</label>
-                    <Toggler name={'image_rotation'} list={[{label: 'ORIGINAL', value: 0}, {label: 'ROTATED', value: 270}]} status={settings.image_rotation} onChange={setSettingsGlobal} />
+                    <Toggler name={'image_rotation'} list={[{label: '- 90°', value: (settings.image_rotation - 90 + 360) % 360}, {label: '+ 90°', value: (settings.image_rotation + 90) % 360}]} status={settings.image_rotation} onChange={setSettingsGlobal}/>
                 </div>
 
                 <div className={'inline-flex gap-16'}>
@@ -170,17 +175,25 @@ export const SettingsPanel = () => {
                     </div>
                 </div>
 
-                <div className={'flex flex-col gap-3'}>
-                    <label>Caption</label>
-                    <div>
-                        <TextInput
-                            name={'caption'}
-                            type={'text'}
-                            initval={settings.caption}
-                            placeholder={'Image Caption'}
-                            onChange={setSettingsGlobal}
-                            className={''}
-                        />
+                <div className={'flex flex-row gap-3'}>
+                    <div className={'flex flex-col gap-3'}>
+                        <label>Caption</label>
+                        <div>
+                            <TextInput
+                                name={'caption'}
+                                type={'text'}
+                                initval={settings.caption}
+                                placeholder={'Image Caption'}
+                                onChange={setSettingsGlobal}
+                                className={''}
+                            />
+                        </div>
+                    </div>
+
+                    {/*toggle letter space*/}
+                    <div className={'flex flex-col items-start gap-2'}>
+                        <label>Caption Letter Spacing</label>
+                        <Toggler name={'caption_letter_spacing'} list={[{label: 'On', value: true}, {label: 'Off', value: false}]} status={settings.caption_letter_spacing} onChange={setSettingsGlobal}/>
                     </div>
                 </div>
 

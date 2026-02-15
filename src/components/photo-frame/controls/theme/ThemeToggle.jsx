@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ThemeContext } from '../../../context/ThemeContext.jsx';
+import {ThemeContext} from '../../../../context/ThemeContext.jsx';
 
-const ThemeToggle = ({ className, disabled }) => {
+const ThemeToggle = ({className, disabled}) => {
     ThemeToggle.propTypes = {
         className: PropTypes.string,
         disabled: PropTypes.bool,
-    }
-    const { theme, setTheme } = React.useContext(ThemeContext);
+    };
+    const {theme, setTheme} = React.useContext(ThemeContext);
 
     return (
         <button
@@ -16,16 +16,16 @@ const ThemeToggle = ({ className, disabled }) => {
             disabled={disabled}
         >
             {theme === 'dark' ? (
-                    /*<i className={'text-gray-500 dark:text-gray-400 la-fw la la-moon'}/>*/
+                /*<i className={'text-gray-500 dark:text-gray-400 la-fw la la-moon'}/>*/
                 <span className={'material-symbols-outline material-symbols-rounded'}>nightlight</span>
             ) : (
                 /*<i className={'text-gray-500 dark:text-gray-400 la-fw la la-sun'}/>*/
                 <span className={'material-symbols-outline material-symbols-rounded'}>light_mode</span>
+            )
+            }
+        </button>
     )
-}
-</button>
-)
-    ;
+        ;
 };
 
 export default ThemeToggle;

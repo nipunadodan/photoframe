@@ -1,11 +1,11 @@
 import {forwardRef, useContext, useEffect, useImperativeHandle, useState, useCallback} from 'react';
 import PropTypes from 'prop-types';
-import {SettingsContext} from '../../context/SettingsContext.jsx';
-import {useCanvas} from '../../hooks/useCanvas.js';
-import {useImageProcessor} from '../../hooks/useImageProcessor.js';
-import {useDragAndDrop} from '../../hooks/useDragAndDrop.js';
-import {copyToClipboard, saveToFile} from '../../services/ImageExporter.js';
-import {loadFont} from '../../services/FontLoader.js';
+import {SettingsContext} from '../../../context/SettingsContext.jsx';
+import {useCanvas} from '../../../hooks/useCanvas.js';
+import {useImageProcessor} from '../../../hooks/useImageProcessor.js';
+import {useDragAndDrop} from '../../../hooks/useDragAndDrop.js';
+import {copyToClipboard, saveToFile} from '../../../services/ImageExporter.js';
+import {loadFont} from '../../../services/FontLoader.js';
 
 // eslint-disable-next-line react/display-name
 export const CanvasHolder = forwardRef(({className}, ref) => {
