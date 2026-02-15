@@ -5,7 +5,7 @@
  * @param {number} [quality=0.95] - The image quality
  * @returns {Promise<Blob>} - The image blob
  */
-export const canvasToBlob = (canvas, type = 'image/jpeg', quality = 0.95) => {
+export const canvasToBlob = (canvas, type = 'image/png', quality = 0.95) => {
     return new Promise((resolve) => {
         canvas.toBlob(blob => resolve(blob), type, quality);
     });

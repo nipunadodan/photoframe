@@ -1,9 +1,9 @@
 import {useContext, useEffect, useRef} from 'react';
 // import { CanvasHolder } from '../../components/imagePlaceholder/canvasHolder/CanvasHolder.jsx';
-import {SettingsPanel} from '../../components/settingsPanel/SettingsPanel.jsx';
-import {SettingsActions} from '../../components/settingsPanel/SettingsActions.jsx';
+import {SettingsPanel} from '../../components/photo-frame/settingsPanel/SettingsPanel.jsx';
+import {SettingsActions} from '../../components/photo-frame/settingsPanel/SettingsActions.jsx';
 import {SettingsContext} from '../../context/SettingsContext.jsx';
-import {CanvasHolder} from '../../components/canvas/CanvasHolder.jsx';
+import {CanvasHolder} from '../../components/photo-frame/canvas/CanvasHolder.jsx';
 
 export const Home = () => {
     const {settings} = useContext(SettingsContext);
