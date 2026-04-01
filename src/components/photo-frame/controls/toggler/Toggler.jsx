@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import React from "react";
 
 export const Toggler = ({name, list, status, onChange}) => {
     Toggler.propTypes = {
@@ -20,7 +21,7 @@ export const Toggler = ({name, list, status, onChange}) => {
         <div className="inline-flex flex-row gap-3 bg-gray-100 dark:bg-gray-700 p-2 rounded-full">
             {list.map((item, index) => (
                 <div key={index} className={'action-button ' + (status === item.value ? 'active' : '')} onClick={() => selectOption(item.value)}>
-                    {item.label}
+                    {item.icon ? (<span className={'material-symbols-outline material-symbols-rounded'}>{item.icon}</span>) : null}{item.label}
                 </div>
             ))}
         </div>
