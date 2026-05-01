@@ -30,11 +30,11 @@ export const Home = () => {
     }, [settings.ratio_height, settings.ratio_height]);
 
     return (
-        <div className={'flex flex-row gap-6 justify-center items-center w-screen h-screen'}>
-            <CanvasHolder ref={canvasRef} className={'canvas-holder'} />
+        <div className={'flex flex-row gap-6 py-6 justify-center items-center min-w-screen min-h-screen'}>
+            <CanvasHolder ref={canvasRef} className={'canvas-holder'}/>
             <div>
-                <SettingsPanel />
-                <SettingsActions command={onCommand} />
+                <SettingsPanel/>
+                <SettingsActions command={onCommand}/>
             </div>
         </div>
     );
