@@ -1,4 +1,4 @@
-import {forwardRef, useContext, useEffect, useImperativeHandle, useState, useCallback} from 'react';
+import {forwardRef, useContext, useEffect, useImperativeHandle, useState, useCallback, useMemo} from 'react';
 import PropTypes from 'prop-types';
 import {SettingsContext} from '../../../context/SettingsContext.jsx';
 import {useCanvas} from '../../../hooks/useCanvas.js';
@@ -10,8 +10,9 @@ import {loadFont} from '../../../services/FontLoader.js';
 // eslint-disable-next-line react/display-name
 export const CanvasHolder = forwardRef(({className}, ref) => {
     const [isImgUploaded, setIsImgUploaded] = useState(false);
-
+    const [wHeight, setWHeight] = useState(window.innerHeight);
     const {settings, setSettings} = useContext(SettingsContext);
+
 
     // Use our custom hooks
     const {
@@ -42,6 +43,10 @@ export const CanvasHolder = forwardRef(({className}, ref) => {
         const initialHeight = 840;
         const initialWidth = settings.width * initialHeight / settings.height;
         initializeCanvas('Click to pick an image', initialWidth, initialHeight);
+
+        const handleResize = () => setWHeight(window.innerHeight);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     // Redraw when settings change
@@ -136,7 +141,7 @@ export const CanvasHolder = forwardRef(({className}, ref) => {
             className={`${className} ${isDragging ? 'dragging' : ''}`}
             style={{
                 flexShrink: 0,
-                height: 840,
+                height: wHeight <= 768 ? 680 : 840,
                 maxWidth: 1000,
                 display: 'flex',
                 overflow: 'clip',
