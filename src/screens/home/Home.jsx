@@ -52,7 +52,7 @@ export const Home = () => {
                 </div>
             </div>
 
-            <div className={'md:hidden fixed top-3 right-3 flex flex-col items-end gap-2'}>
+            <div className={`md:hidden fixed top-3 right-3 flex flex-col items-end gap-2`}>
                 <div className={'flex gap-2'}>
                     <input type={'submit'} className={`cta ${editing ? 'active' : ''}`} value={editing ? 'DONE' : 'EDIT'}
                            onClick={() => setEditing(!editing)} />
