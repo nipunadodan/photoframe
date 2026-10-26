@@ -1,9 +1,11 @@
 import {useContext, useEffect} from 'react';
+import PropTypes from 'prop-types';
 import {Check, Toggler, ValueSlider, TextInput} from '../controls/index.js';
 import {SettingsContext} from '../../../context/SettingsContext.jsx';
 import {useCalculatedCanvasDimensions} from '../../../hooks/calcCanvasDim.js';
 
-export const SettingsPanel = () => {
+export const SettingsPanel = ({section}) => {
+    const show = (name) => !section || section === name;
     const {settings, setSettings} = useContext(SettingsContext);
     const {calcWidth, calcHeight} = useCalculatedCanvasDimensions();
 
@@ -34,6 +36,7 @@ export const SettingsPanel = () => {
     return (
         <div>
             <aside className={'justify-center w-full p-4 inline-flex flex-col gap-6'}>
+                {show('background') && <>
                 <div className={'flex flex-col items-start gap-2'}>
                     <label>Background</label>
                     <Toggler
@@ -78,6 +81,9 @@ export const SettingsPanel = () => {
                     </div>
                 </div>
 
+                </>}
+
+                {show('frame') && <>
                 <div className={'flex flex-col gap-3'}>
                     <label>Border Radius</label>
                     <div className={'flex flex-row gap-3 items-center'}>
@@ -135,7 +141,10 @@ export const SettingsPanel = () => {
                              onChange={setSettingsGlobal}/>
                 </div>
 
-                <div className={'inline-flex gap-16'}>
+                </>}
+
+                {show('canvas') && <>
+                <div className={'inline-flex gap-6 md:gap-16'}>
                     <div className={'flex flex-col gap-3'}>
                         <label>Canvas Ratio</label>
                         <div className={'inline-flex flex-row gap-3 items-center'}>
@@ -177,7 +186,10 @@ export const SettingsPanel = () => {
                     </div>
                 </div>
 
-                <div className={'flex flex-row gap-3'}>
+                </>}
+
+                {show('text') && <>
+                <div className={'flex flex-row flex-wrap gap-3'}>
                     <div className={'flex flex-col gap-3'}>
                         <label>Caption</label>
                         <div>
@@ -199,7 +211,7 @@ export const SettingsPanel = () => {
                     </div>
                 </div>
 
-                <div className={'flex flex-row gap-8'}>
+                <div className={'flex flex-row flex-wrap gap-4 md:gap-8'}>
                     <Check
                         name={'caption_enabled'}
                         label={'Caption'}
@@ -225,7 +237,13 @@ export const SettingsPanel = () => {
                         onChange={setSettingsGlobal}
                     />
                 </div>
+                </>}
             </aside>
         </div>
     );
+};
+
+
+SettingsPanel.propTypes = {
+    section: PropTypes.string,
 };
