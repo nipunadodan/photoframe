@@ -5,6 +5,7 @@ import {useCanvas} from '../../../hooks/useCanvas.js';
 import {useImageProcessor} from '../../../hooks/useImageProcessor.js';
 import {useDragAndDrop} from '../../../hooks/useDragAndDrop.js';
 import {copyToClipboard, saveToFile} from '../../../services/ImageExporter.js';
+import {useIsMobile} from '../../../hooks/useIsMobile.js';
 import {loadFont} from '../../../services/FontLoader.js';
 
 // eslint-disable-next-line react/display-name
@@ -12,6 +13,7 @@ export const CanvasHolder = forwardRef(({className}, ref) => {
     const [isImgUploaded, setIsImgUploaded] = useState(false);
     const [wHeight, setWHeight] = useState(window.innerHeight);
     const {settings, setSettings} = useContext(SettingsContext);
+    const isMobile = useIsMobile();
 
 
     // Use our custom hooks
@@ -141,8 +143,8 @@ export const CanvasHolder = forwardRef(({className}, ref) => {
             className={`${className} ${isDragging ? 'dragging' : ''}`}
             style={{
                 flexShrink: 0,
-                height: wHeight <= 768 ? 680 : 840,
-                maxWidth: 1000,
+                height: isMobile ? '100%' : (wHeight <= 768 ? 680 : 840),
+                maxWidth: isMobile ? '100%' : 1000,
                 display: 'flex',
                 overflow: 'clip',
                 border: (!isImgUploaded ? '3px dashed #364462' : 'none'),
@@ -163,6 +165,7 @@ export const CanvasHolder = forwardRef(({className}, ref) => {
                 ref={canvasRef}
                 style={{
                     width: '100%',
+                    height: isMobile ? '100%' : undefined,
                     objectFit: 'contain',
                 }}
             />
