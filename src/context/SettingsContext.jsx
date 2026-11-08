@@ -14,6 +14,7 @@ const INIT = {
     foreground_image_scale: 0.8,
     image_rotation: 0,
     caption: '',
+    location: '',
     caption_enabled: true,
     watermark_enabled: true,
     exif_enabled: true,

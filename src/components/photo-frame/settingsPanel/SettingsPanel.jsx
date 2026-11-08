@@ -204,6 +204,20 @@ export const SettingsPanel = ({section}) => {
                         </div>
                     </div>
 
+                    <div className={'flex flex-col gap-3'}>
+                        <label>Location</label>
+                        <div>
+                            <TextInput
+                                name={'location'}
+                                type={'text'}
+                                initval={settings.location}
+                                placeholder={'Location'}
+                                onChange={setSettingsGlobal}
+                                className={''}
+                            />
+                        </div>
+                    </div>
+
                     {/*toggle letter space*/}
                     <div className={'flex flex-col items-start gap-2'}>
                         <label>Caption Letter Spacing</label>

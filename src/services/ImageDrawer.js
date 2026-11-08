@@ -141,6 +141,18 @@ export const createImageDrawer = (ctx, settings) => {
             ctx.textAlign = 'right';
             ctx.fillText(settings.caption, offsetX + foreImgWidth, offsetY);
         }
+
+        // Draw location above the top left corner of the image
+        if (settings.location) {
+            ctx.letterSpacing = 'normal';
+            ctx.font = 'medium ' + font.fontSize + 'px Inter';
+            ctx.textAlign = 'left';
+            ctx.fillText(
+                settings.location,
+                offsetX + foreImgWidth * .01,
+                offsetY - foreImgHeight - font.fontSize - foreImgWidth * .07,
+            );
+        }
     };
 
     /**
